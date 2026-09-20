@@ -9,6 +9,8 @@ class HistoriquePrix extends Model
 {
     use HasFactory;
 
+    protected $table = 'historique_prix';
+
     protected $fillable = [
         'nom_produit',
         'prix_moyen',
