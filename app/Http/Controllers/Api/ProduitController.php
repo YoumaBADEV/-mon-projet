@@ -19,14 +19,19 @@ class ProduitController extends Controller
     // POST /api/produits
     public function store(Request $request): JsonResponse
     {
+        if ($request->user()->role !== 'agriculteur') {
+            return response()->json(['message' => 'Seul un agriculteur peut publier un produit.'], 403);
+        }
+
         $validated = $request->validate([
-            'agriculteur_id' => 'required|exists:users,id',
             'nom_produit' => 'required|string|max:255',
             'quantite' => 'required|numeric|min:0',
             'unite' => 'nullable|string|max:20',
             'prix_propose' => 'required|numeric|min:0',
             'localisation' => 'nullable|string|max:255',
         ]);
+
+        $validated['agriculteur_id'] = $request->user()->id;
 
         $produit = Produit::create($validated);
         return response()->json($produit, 201);
@@ -41,6 +46,10 @@ class ProduitController extends Controller
     // PUT/PATCH /api/produits/{id}
     public function update(Request $request, Produit $produit): JsonResponse
     {
+        if ($produit->agriculteur_id !== $request->user()->id) {
+            return response()->json(['message' => 'Vous ne pouvez modifier que vos propres produits.'], 403);
+        }
+
         $validated = $request->validate([
             'nom_produit' => 'sometimes|string|max:255',
             'quantite' => 'sometimes|numeric|min:0',
@@ -53,8 +62,12 @@ class ProduitController extends Controller
     }
 
     // DELETE /api/produits/{id}
-    public function destroy(Produit $produit): JsonResponse
+    public function destroy(Request $request, Produit $produit): JsonResponse
     {
+        if ($produit->agriculteur_id !== $request->user()->id) {
+            return response()->json(['message' => 'Vous ne pouvez supprimer que vos propres produits.'], 403);
+        }
+
         $produit->delete();
         return response()->json(null, 204);
     }
