@@ -1,9 +1,18 @@
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {}
+export class Login {
+  email = '';
+  password = '';
+
+  onSubmit() {
+    console.log('Tentative de connexion :', this.email, this.password);
+  }
+}
