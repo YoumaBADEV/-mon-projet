@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Auth } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-login',
@@ -11,8 +12,28 @@ import { RouterLink } from '@angular/router';
 export class Login {
   email = '';
   password = '';
+  loading = false;
+  errorMessage = '';
+
+  constructor(private authService: Auth, private router: Router) {}
 
   onSubmit() {
-    console.log('Tentative de connexion :', this.email, this.password);
+    this.errorMessage = '';
+    this.loading = true;
+
+    this.authService.login(this.email, this.password).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.user.role === 'agriculteur') {
+          this.router.navigate(['/agriculteur']);
+        } else {
+          this.router.navigate(['/acheteur']);
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect.';
+      },
+    });
   }
 }

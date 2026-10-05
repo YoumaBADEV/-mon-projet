@@ -1,1 +1,74 @@
-<p>mes-recoltes works!</p>
+<div class="container mt-4">
+  <h2 class="mb-4">Mes récoltes</h2>
+
+  <div class="card p-4 shadow mb-4">
+    <h5 class="mb-3">Ajouter un produit</h5>
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Nom du produit</label>
+          <input type="text" class="form-control" [(ngModel)]="nom_produit" name="nom_produit" required>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Quantité</label>
+          <input type="number" class="form-control" [(ngModel)]="quantite" name="quantite" required min="0">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Unité</label>
+          <input type="text" class="form-control" [(ngModel)]="unite" name="unite" placeholder="kg">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Prix (FCFA)</label>
+          <input type="number" class="form-control" [(ngModel)]="prix_propose" name="prix_propose" required min="0">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Localisation</label>
+          <input type="text" class="form-control" [(ngModel)]="localisation" name="localisation">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success mt-3" [disabled]="loading">
+        {{ loading ? 'Ajout...' : 'Ajouter' }}
+      </button>
+    </form>
+  </div>
+
+  <h5 class="mb-3">Mes produits publiés</h5>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Quantité</th>
+          <th>Prix</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of mesProduits; track p.id) {
+          <tr>
+            <td>{{ p.nom_produit }}</td>
+            <td>{{ p.quantite }} {{ p.unite }}</td>
+            <td>{{ p.prix_propose }} FCFA</td>
+            <td>
+              <span class="badge" [class.bg-success]="p.statut === 'disponible'" [class.bg-secondary]="p.statut === 'vendu'">
+                {{ p.statut }}
+              </span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-danger" (click)="onDelete(p.id!)">Supprimer</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
