@@ -1,8 +1,8 @@
+```php
 <?php
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -42,3 +42,5 @@ class User extends Authenticatable
         return $this->hasMany(Vente::class, 'acheteur_id');
     }
 }
+```
+
