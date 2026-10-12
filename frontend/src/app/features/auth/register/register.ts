@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
@@ -20,7 +20,11 @@ export class Register {
   loading = false;
   errorMessage = '';
 
-  constructor(private authService: Auth, private router: Router) {}
+  constructor(
+    private authService: Auth,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   onSubmit() {
     this.errorMessage = '';
@@ -45,7 +49,11 @@ export class Register {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Erreur lors de l\'inscription.';
+        const errors = err.error?.errors;
+        this.errorMessage = errors
+          ? Object.values(errors).flat().join(' ')
+          : err.error?.message || "Erreur lors de l'inscription.";
+        this.cdr.markForCheck();
       },
     });
   }

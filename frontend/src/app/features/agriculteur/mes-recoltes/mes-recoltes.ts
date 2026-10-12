@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProduitService, Produit } from '../../../core/services/produit';
 import { Auth } from '../../../core/services/auth';
@@ -21,7 +21,11 @@ export class MesRecoltes implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private produitService: ProduitService, private authService: Auth) {}
+  constructor(
+    private produitService: ProduitService,
+    private authService: Auth,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.loadProduits();
@@ -32,9 +36,11 @@ export class MesRecoltes implements OnInit {
     this.produitService.getAll().subscribe({
       next: (produits) => {
         this.mesProduits = produits.filter((p) => p.agriculteur_id === user?.id);
+        this.cdr.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Impossible de charger tes produits.';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -61,10 +67,12 @@ export class MesRecoltes implements OnInit {
         this.prix_propose = null;
         this.localisation = '';
         this.loadProduits();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
         this.errorMessage = err.error?.message || "Erreur lors de l'ajout.";
+        this.cdr.markForCheck();
       },
     });
   }
@@ -76,6 +84,7 @@ export class MesRecoltes implements OnInit {
       next: () => this.loadProduits(),
       error: () => {
         this.errorMessage = 'Erreur lors de la suppression.';
+        this.cdr.markForCheck();
       },
     });
   }
