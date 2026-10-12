@@ -21,6 +21,12 @@ export class MesRecoltes implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  // Modification en cours
+  editingId: number | null = null;
+  editNom = '';
+  editQuantite: number | null = null;
+  editPrix: number | null = null;
+
   constructor(
     private produitService: ProduitService,
     private authService: Auth,
@@ -72,6 +78,41 @@ export class MesRecoltes implements OnInit {
       error: (err) => {
         this.loading = false;
         this.errorMessage = err.error?.message || "Erreur lors de l'ajout.";
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  onEdit(p: Produit) {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.editingId = p.id!;
+    this.editNom = p.nom_produit;
+    this.editQuantite = Number(p.quantite);
+    this.editPrix = Number(p.prix_propose);
+  }
+
+  onCancelEdit() {
+    this.editingId = null;
+  }
+
+  onSave(id: number) {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.produitService.update(id, {
+      nom_produit: this.editNom,
+      quantite: this.editQuantite!,
+      prix_propose: this.editPrix!,
+    }).subscribe({
+      next: () => {
+        this.editingId = null;
+        this.successMessage = 'Produit modifié avec succès !';
+        this.loadProduits();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Erreur lors de la modification.';
         this.cdr.markForCheck();
       },
     });
