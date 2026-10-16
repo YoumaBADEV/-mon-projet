@@ -15,6 +15,10 @@ export class ConsulterPrix implements OnInit {
   errorMessage = '';
   successMessage = '';
 
+  recherche = '';
+  localisationFiltre = '';
+  tri = '';
+
   constructor(
     private produitService: ProduitService,
     private venteService: VenteService,
@@ -39,6 +43,35 @@ export class ConsulterPrix implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  get localisations(): string[] {
+    const liste = this.produits.map((p) => p.localisation).filter((l): l is string => !!l);
+    return [...new Set(liste)].sort();
+  }
+
+  get produitsFiltres(): Produit[] {
+    let liste = this.produits.filter((p) =>
+      p.nom_produit.toLowerCase().includes(this.recherche.toLowerCase().trim()),
+    );
+
+    if (this.localisationFiltre) {
+      liste = liste.filter((p) => p.localisation === this.localisationFiltre);
+    }
+
+    if (this.tri === 'asc') {
+      liste = [...liste].sort((a, b) => Number(a.prix_propose) - Number(b.prix_propose));
+    } else if (this.tri === 'desc') {
+      liste = [...liste].sort((a, b) => Number(b.prix_propose) - Number(a.prix_propose));
+    }
+
+    return liste;
+  }
+
+  reinitialiser() {
+    this.recherche = '';
+    this.localisationFiltre = '';
+    this.tri = '';
   }
 
   onAcheter(p: Produit) {

@@ -1,44 +1,84 @@
-<div class="container mt-4">
-  <h2 class="mb-4">Produits disponibles</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Prix du marché</h2>
+    <p class="text-muted mb-0">Compare les prix proposés par les agriculteurs.</p>
+  </div>
+  <button class="btn btn-success" (click)="loadProduits()">🔄 Actualiser</button>
+</div>
 
-  @if (errorMessage) {
-    <div class="alert alert-danger">{{ errorMessage }}</div>
-  }
-  @if (successMessage) {
-    <div class="alert alert-success">{{ successMessage }}</div>
-  }
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
 
-  @if (produits.length === 0) {
-    <p class="text-muted">Aucun produit disponible pour le moment.</p>
-  }
-
-  <div class="row g-3">
-    @for (p of produits; track p.id) {
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
       <div class="col-md-4">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">{{ p.nom_produit }}</h5>
-            <p class="mb-1">Disponible : {{ p.quantite }} {{ p.unite }}</p>
-            <p class="mb-1">Prix : <strong>{{ p.prix_propose }} FCFA</strong> / {{ p.unite }}</p>
-            <p class="text-muted">{{ p.localisation }}</p>
+        <label class="form-label small text-muted mb-1">Rechercher un produit</label>
+        <input type="text" class="form-control" placeholder="Ex : tomate" [(ngModel)]="recherche" name="recherche">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small text-muted mb-1">Localisation</label>
+        <select class="form-select" [(ngModel)]="localisationFiltre" name="localisationFiltre">
+          <option value="">Toutes les localisations</option>
+          @for (l of localisations; track l) {
+            <option [value]="l">{{ l }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small text-muted mb-1">Trier par prix</label>
+        <select class="form-select" [(ngModel)]="tri" name="tri">
+          <option value="">Sans tri</option>
+          <option value="asc">Du moins cher au plus cher</option>
+          <option value="desc">Du plus cher au moins cher</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-outline-secondary w-100" (click)="reinitialiser()">Réinitialiser</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-            @if (p.agriculteur) {
-              <p class="mb-2 small">
-                Agriculteur : <strong>{{ p.agriculteur.name }}</strong>
-                @if (p.agriculteur.telephone) {
-                  <br>📞 <a [href]="'tel:' + p.agriculteur.telephone">{{ p.agriculteur.telephone }}</a>
-                }
-              </p>
-            }
+<p class="text-muted small mb-3">{{ produitsFiltres.length }} produit(s) trouvé(s)</p>
 
-            <div class="input-group">
-              <input type="number" class="form-control" min="1" [max]="p.quantite"
-                     [(ngModel)]="quantites[p.id!]" placeholder="Quantité">
-              <button class="btn btn-success" (click)="onAcheter(p)">Acheter</button>
-            </div>
+@if (produitsFiltres.length === 0) {
+  <p class="text-muted">Aucun produit ne correspond à ta recherche.</p>
+}
+
+<div class="row g-3">
+  @for (p of produitsFiltres; track p.id) {
+    <div class="col-md-6 col-xl-4">
+      <div class="card product-card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title mb-0 text-capitalize">{{ p.nom_produit }}</h5>
+            <span class="badge bg-success-subtle text-success-emphasis">{{ p.quantite }} {{ p.unite }}</span>
+          </div>
+
+          <div class="price mb-1">{{ p.prix_propose }} <small>FCFA / {{ p.unite }}</small></div>
+          <p class="text-muted small mb-2">📍 {{ p.localisation || 'Non précisé' }}</p>
+
+          @if (p.agriculteur) {
+            <p class="mb-3 small">
+              👨‍🌾 <strong>{{ p.agriculteur.name }}</strong>
+              @if (p.agriculteur.telephone) {
+                <br>📞 <a [href]="'tel:' + p.agriculteur.telephone">{{ p.agriculteur.telephone }}</a>
+              }
+            </p>
+          }
+
+          <div class="input-group">
+            <input type="number" class="form-control" min="1" [max]="p.quantite"
+                   [(ngModel)]="quantites[p.id!]" placeholder="Quantité">
+            <button class="btn btn-success" (click)="onAcheter(p)">Acheter</button>
           </div>
         </div>
       </div>
-    }
-  </div>
+    </div>
+  }
 </div>
