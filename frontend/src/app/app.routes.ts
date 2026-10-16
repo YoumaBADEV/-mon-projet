@@ -5,6 +5,7 @@ import { Dashboard as AgriculteurDashboard } from './features/agriculteur/dashbo
 import { MesRecoltes } from './features/agriculteur/mes-recoltes/mes-recoltes';
 import { Dashboard as AcheteurDashboard } from './features/acheteur/dashboard/dashboard';
 import { ConsulterPrix } from './features/acheteur/consulter-prix/consulter-prix';
+import { Historique } from './features/acheteur/historique/historique';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -32,6 +33,12 @@ export const routes: Routes = [
   {
     path: 'acheteur/consulter-prix',
     component: ConsulterPrix,
+    canActivate: [authGuard],
+    data: { roles: ['acheteur'] },
+  },
+  {
+    path: 'acheteur/historique',
+    component: Historique,
     canActivate: [authGuard],
     data: { roles: ['acheteur'] },
   },
