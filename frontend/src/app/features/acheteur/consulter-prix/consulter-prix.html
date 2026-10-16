@@ -22,6 +22,15 @@
             <p class="mb-1">Prix : <strong>{{ p.prix_propose }} FCFA</strong> / {{ p.unite }}</p>
             <p class="text-muted">{{ p.localisation }}</p>
 
+            @if (p.agriculteur) {
+              <p class="mb-2 small">
+                Agriculteur : <strong>{{ p.agriculteur.name }}</strong>
+                @if (p.agriculteur.telephone) {
+                  <br>📞 <a [href]="'tel:' + p.agriculteur.telephone">{{ p.agriculteur.telephone }}</a>
+                }
+              </p>
+            }
+
             <div class="input-group">
               <input type="number" class="form-control" min="1" [max]="p.quantite"
                      [(ngModel)]="quantites[p.id!]" placeholder="Quantité">
