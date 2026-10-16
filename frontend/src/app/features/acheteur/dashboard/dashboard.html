@@ -1,14 +1,52 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Tableau de bord Acheteur</h2>
-    <button class="btn btn-outline-danger" (click)="onLogout()">Déconnexion</button>
-  </div>
-  <p>Bienvenue {{ userName }} 👋</p>
+<h2 class="mb-1">Bonjour {{ userName }} 👋</h2>
+<p class="text-muted mb-4">Voici le résumé de tes achats.</p>
 
-  <a routerLink="/acheteur/consulter-prix" class="btn btn-success me-2">
-    Consulter les produits et acheter
-  </a>
-  <a routerLink="/acheteur/historique" class="btn btn-outline-success">
-    Mes achats
-  </a>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-success-subtle">🌾</div>
+        <div class="stat-value">{{ nbProduits }}</div>
+        <div class="text-muted small">Produits disponibles</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-info-subtle">🧾</div>
+        <div class="stat-value">{{ nbAchats }}</div>
+        <div class="text-muted small">Achats effectués</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-warning-subtle">💰</div>
+        <div class="stat-value">{{ totalDepense }} <small class="fs-6">FCFA</small></div>
+        <div class="text-muted small">Total dépensé</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-primary-subtle">🕒</div>
+        @if (dernierAchat) {
+          <div class="stat-value fs-5">{{ dernierAchat.produit?.nom_produit }}</div>
+          <div class="text-muted small">Dernier achat · {{ dernierAchat.created_at | date: 'dd/MM/yyyy' }}</div>
+        } @else {
+          <div class="stat-value">—</div>
+          <div class="text-muted small">Aucun achat pour l'instant</div>
+        }
+      </div>
+    </div>
+  </div>
 </div>
+
+<a routerLink="/acheteur/consulter-prix" class="btn btn-success me-2">Voir les produits et acheter</a>
+<a routerLink="/acheteur/historique" class="btn btn-outline-success">Mes achats</a>

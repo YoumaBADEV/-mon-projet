@@ -6,6 +6,7 @@ import { MesRecoltes } from './features/agriculteur/mes-recoltes/mes-recoltes';
 import { Dashboard as AcheteurDashboard } from './features/acheteur/dashboard/dashboard';
 import { ConsulterPrix } from './features/acheteur/consulter-prix/consulter-prix';
 import { Historique } from './features/acheteur/historique/historique';
+import { Layout } from './shared/layout/layout';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -13,33 +14,40 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   {
-    path: 'agriculteur',
-    component: AgriculteurDashboard,
+    path: '',
+    component: Layout,
     canActivate: [authGuard],
-    data: { roles: ['agriculteur'] },
-  },
-  {
-    path: 'agriculteur/mes-recoltes',
-    component: MesRecoltes,
-    canActivate: [authGuard],
-    data: { roles: ['agriculteur'] },
-  },
-  {
-    path: 'acheteur',
-    component: AcheteurDashboard,
-    canActivate: [authGuard],
-    data: { roles: ['acheteur'] },
-  },
-  {
-    path: 'acheteur/consulter-prix',
-    component: ConsulterPrix,
-    canActivate: [authGuard],
-    data: { roles: ['acheteur'] },
-  },
-  {
-    path: 'acheteur/historique',
-    component: Historique,
-    canActivate: [authGuard],
-    data: { roles: ['acheteur'] },
+    children: [
+      {
+        path: 'agriculteur',
+        component: AgriculteurDashboard,
+        canActivate: [authGuard],
+        data: { roles: ['agriculteur'] },
+      },
+      {
+        path: 'agriculteur/mes-recoltes',
+        component: MesRecoltes,
+        canActivate: [authGuard],
+        data: { roles: ['agriculteur'] },
+      },
+      {
+        path: 'acheteur',
+        component: AcheteurDashboard,
+        canActivate: [authGuard],
+        data: { roles: ['acheteur'] },
+      },
+      {
+        path: 'acheteur/consulter-prix',
+        component: ConsulterPrix,
+        canActivate: [authGuard],
+        data: { roles: ['acheteur'] },
+      },
+      {
+        path: 'acheteur/historique',
+        component: Historique,
+        canActivate: [authGuard],
+        data: { roles: ['acheteur'] },
+      },
+    ],
   },
 ];

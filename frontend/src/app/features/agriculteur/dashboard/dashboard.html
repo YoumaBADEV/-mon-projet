@@ -1,11 +1,46 @@
-<div class="container mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Tableau de bord Agriculteur</h2>
-    <button class="btn btn-outline-danger" (click)="onLogout()">Déconnexion</button>
-  </div>
-  <p>Bienvenue {{ userName }} 👋</p>
+<h2 class="mb-1">Bonjour {{ userName }} 👋</h2>
+<p class="text-muted mb-4">Voici le résumé de ton activité.</p>
 
-  <a routerLink="/agriculteur/mes-recoltes" class="btn btn-success">
-    Gérer mes récoltes
-  </a>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-success-subtle">🌾</div>
+        <div class="stat-value">{{ nbProduits }}</div>
+        <div class="text-muted small">Produits en vente</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-warning-subtle">📦</div>
+        <div class="stat-value">{{ valeurStock }} <small class="fs-6">FCFA</small></div>
+        <div class="text-muted small">Valeur de mon stock</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-info-subtle">🧾</div>
+        <div class="stat-value">{{ nbVentes }}</div>
+        <div class="text-muted small">Ventes réalisées</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-sm-6 col-xl-3">
+    <div class="card stat-card shadow-sm h-100">
+      <div class="card-body">
+        <div class="stat-icon bg-primary-subtle">💰</div>
+        <div class="stat-value">{{ chiffreAffaires }} <small class="fs-6">FCFA</small></div>
+        <div class="text-muted small">Chiffre d'affaires</div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<a routerLink="/agriculteur/mes-recoltes" class="btn btn-success">Gérer mes récoltes</a>
