@@ -36,7 +36,13 @@ export class Login {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect.';
+        if (err.status === 0) {
+          this.errorMessage = 'Serveur injoignable. Vérifie que le backend est lancé.';
+        } else if (err.status === 422 && err.error?.errors) {
+          this.errorMessage = Object.values(err.error.errors).flat().join(' ');
+        } else {
+          this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect.';
+        }
         this.cdr.markForCheck();
       },
     });
