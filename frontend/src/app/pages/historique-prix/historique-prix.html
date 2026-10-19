@@ -1,30 +1,28 @@
-
-<div class="historique-container">
+﻿<div class="historique-container">
   <h1>Historique des prix</h1>
   <p>Consultez l'évolution des prix des produits agricoles.</p>
 
-  <div class="filtres">
-    <label for="produit">Choisir un produit :</label>
-    <select id="produit">
-      <option value="">Tous les produits</option>
-      <option value="mil">Mil</option>
-      <option value="mais">Maïs</option>
-      <option value="tomate">Tomate</option>
-      <option value="oignon">Oignon</option>
-    </select>
-  </div>
+  <p *ngIf="chargement">Chargement des prix...</p>
+  <p *ngIf="erreur">{{ erreur }}</p>
 
-  <table>
+  <table *ngIf="!chargement && !erreur">
     <thead>
       <tr>
         <th>Produit</th>
-        <th>Prix (FCFA)</th>
+        <th>Prix moyen (FCFA)</th>
+        <th>Région</th>
         <th>Date</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td colspan="3">Aucun historique chargé pour le moment.</td>
+      <tr *ngFor="let prix of historique">
+        <td>{{ prix.nom_produit }}</td>
+        <td>{{ prix.prix_moyen | number:'1.0-2' }}</td>
+        <td>{{ prix.region || 'Non précisée' }}</td>
+        <td>{{ prix.date_calcul | date:'dd/MM/yyyy' }}</td>
+      </tr>
+      <tr *ngIf="historique.length === 0">
+        <td colspan="4">Aucun historique de prix disponible.</td>
       </tr>
     </tbody>
   </table>

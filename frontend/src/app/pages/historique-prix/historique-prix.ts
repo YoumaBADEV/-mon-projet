@@ -1,35 +1,29 @@
+﻿import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HistoriquePrixService, HistoriquePrixRecord } from '../../services/historique-prix.service';
 
-.historique-container {
-  padding: 24px;
-  font-family: Arial, sans-serif;
-}
+@Component({
+  selector: 'app-historique-prix',
+  imports: [CommonModule],
+  templateUrl: './historique-prix.html',
+  styleUrl: './historique-prix.css',
+})
+export class HistoriquePrix implements OnInit {
+  private service = inject(HistoriquePrixService);
+  historique: HistoriquePrixRecord[] = [];
+  chargement = true;
+  erreur = '';
 
-h1 {
-  color: #246b38;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  background: white;
-}
-
-th, td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: left;
-}
-
-th {
-  background-color: #246b38;
-  color: white;
-}
-
-tbody tr:nth-child(even) {
-  background-color: #f3f7f3;
-}
-
-p {
-  margin-top: 12px;
+  ngOnInit(): void {
+    this.service.obtenirHistorique().subscribe({
+      next: (donnees) => {
+        this.historique = donnees;
+        this.chargement = false;
+      },
+      error: () => {
+        this.erreur = 'Impossible de charger les prix. Vérifiez que Laravel est démarré.';
+        this.chargement = false;
+      }
+    });
+  }
 }
