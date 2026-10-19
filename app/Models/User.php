@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'role', 'telephone', 'localisation'])]
+#[Fillable(['name', 'nom', 'prenom', 'email', 'password', 'role', 'telephone', 'localisation', 'adresse', 'matricule'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -24,6 +24,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (User $user) {
+            if ($user->nom || $user->prenom) {
+                $user->name = trim($user->prenom . ' ' . $user->nom);
+            }
+        });
     }
 
     public function produits(): HasMany
