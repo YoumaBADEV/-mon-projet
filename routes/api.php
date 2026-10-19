@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\ProduitController;
 use App\Http\Controllers\Api\VenteController;
 use App\Http\Controllers\Api\HistoriquePrixController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CategorieController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PriceHistoryController;
 use Illuminate\Http\Request;
@@ -20,6 +21,9 @@ Route::get('produits', [ProduitController::class, 'index']);
 Route::get('produits/{produit}', [ProduitController::class, 'show']);
 
 Route::get('historique-prix', [HistoriquePrixController::class, 'index']);
+
+Route::get('categories', [CategorieController::class, 'index']);
+Route::get('categories/{categorie}', [CategorieController::class, 'show']);
 
 
 // ====================
@@ -43,6 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Ventes
     Route::apiResource('ventes', VenteController::class)
         ->only(['index', 'store', 'show']);
+
+    // Categories (creation/modification/suppression reservees a l'admin, verifie dans le controleur)
+    Route::post('categories', [CategorieController::class, 'store']);
+    Route::put('categories/{categorie}', [CategorieController::class, 'update']);
+    Route::patch('categories/{categorie}', [CategorieController::class, 'update']);
+    Route::delete('categories/{categorie}', [CategorieController::class, 'destroy']);
 });
 
 

@@ -12,7 +12,7 @@ class ProduitController extends Controller
     // GET /api/produits
     public function index(): JsonResponse
     {
-        $produits = Produit::with('agriculteur')->where('statut', 'disponible')->get();
+        $produits = Produit::with('agriculteur', 'categorie')->where('statut', 'disponible')->get();
         return response()->json($produits);
     }
 
@@ -25,6 +25,8 @@ class ProduitController extends Controller
 
         $validated = $request->validate([
             'nom_produit' => 'required|string|max:255',
+            'description' => 'nullable|string|max:2000',
+            'categorie_id' => 'nullable|exists:categories,id',
             'quantite' => 'required|numeric|min:0',
             'unite' => 'nullable|string|max:20',
             'prix_propose' => 'required|numeric|min:0',
@@ -34,13 +36,13 @@ class ProduitController extends Controller
         $validated['agriculteur_id'] = $request->user()->id;
 
         $produit = Produit::create($validated);
-        return response()->json($produit, 201);
+        return response()->json($produit->load('categorie'), 201);
     }
 
     // GET /api/produits/{id}
     public function show(Produit $produit): JsonResponse
     {
-        return response()->json($produit->load('agriculteur', 'ventes'));
+        return response()->json($produit->load('agriculteur', 'categorie', 'ventes'));
     }
 
     // PUT/PATCH /api/produits/{id}
@@ -52,13 +54,15 @@ class ProduitController extends Controller
 
         $validated = $request->validate([
             'nom_produit' => 'sometimes|string|max:255',
+            'description' => 'sometimes|nullable|string|max:2000',
+            'categorie_id' => 'sometimes|nullable|exists:categories,id',
             'quantite' => 'sometimes|numeric|min:0',
             'prix_propose' => 'sometimes|numeric|min:0',
             'statut' => 'sometimes|in:disponible,vendu',
         ]);
 
         $produit->update($validated);
-        return response()->json($produit);
+        return response()->json($produit->load('categorie'));
     }
 
     // DELETE /api/produits/{id}
