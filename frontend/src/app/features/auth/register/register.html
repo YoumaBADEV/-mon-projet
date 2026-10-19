@@ -1,6 +1,7 @@
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-  <div class="card p-4 shadow" style="width: 100%; max-width: 450px;">
-    <h3 class="text-center mb-4">Inscription</h3>
+<div class="auth-page">
+  <div class="card auth-card shadow-lg p-4">
+    <div class="auth-brand mb-1">🌾 Oracle de Prix</div>
+    <p class="text-center text-muted mb-4">Crée ton compte</p>
 
     @if (errorMessage) {
       <div class="alert alert-danger">{{ errorMessage }}</div>
@@ -15,13 +16,15 @@
         <label class="form-label">Email</label>
         <input type="email" class="form-control" [(ngModel)]="email" name="email" required>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Mot de passe</label>
-        <input type="password" class="form-control" [(ngModel)]="password" name="password" required minlength="8">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Confirmer le mot de passe</label>
-        <input type="password" class="form-control" [(ngModel)]="password_confirmation" name="password_confirmation" required>
+      <div class="row g-2">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Mot de passe</label>
+          <input type="password" class="form-control" [(ngModel)]="password" name="password" required minlength="8">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Confirmation</label>
+          <input type="password" class="form-control" [(ngModel)]="password_confirmation" name="password_confirmation" required>
+        </div>
       </div>
       <div class="mb-3">
         <label class="form-label">Je suis :</label>
@@ -31,18 +34,20 @@
           <option value="acheteur">Acheteur</option>
         </select>
       </div>
-      <div class="mb-3">
-        <label class="form-label">Téléphone (optionnel)</label>
-        <input type="text" class="form-control" [(ngModel)]="telephone" name="telephone">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Localisation (optionnel)</label>
-        <input type="text" class="form-control" [(ngModel)]="localisation" name="localisation">
+      <div class="row g-2">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Téléphone (optionnel)</label>
+          <input type="text" class="form-control" [(ngModel)]="telephone" name="telephone">
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Localisation (optionnel)</label>
+          <input type="text" class="form-control" [(ngModel)]="localisation" name="localisation">
+        </div>
       </div>
       <button type="submit" class="btn btn-success w-100" [disabled]="loading">
         {{ loading ? 'Inscription...' : "S'inscrire" }}
       </button>
-      <p class="text-center mt-3">
+      <p class="text-center mt-3 mb-0">
         Déjà un compte ? <a routerLink="/login">Se connecter</a>
       </p>
     </form>

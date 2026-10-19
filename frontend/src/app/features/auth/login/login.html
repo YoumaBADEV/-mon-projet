@@ -1,6 +1,12 @@
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
-  <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
-    <h3 class="text-center mb-4">Connexion</h3>
+<div class="auth-page">
+  <div class="card auth-card shadow-lg p-4">
+    <div class="auth-brand mb-1">🌾 Oracle de Prix</div>
+    <p class="text-center text-muted mb-4">Connecte-toi pour accéder à ton espace</p>
+
+    @if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    }
+
     <form (ngSubmit)="onSubmit()">
       <div class="mb-3">
         <label class="form-label">Email</label>
@@ -10,8 +16,10 @@
         <label class="form-label">Mot de passe</label>
         <input type="password" class="form-control" [(ngModel)]="password" name="password" required>
       </div>
-      <button type="submit" class="btn btn-success w-100">Se connecter</button>
-      <p class="text-center mt-3">
+      <button type="submit" class="btn btn-success w-100" [disabled]="loading">
+        {{ loading ? 'Connexion...' : 'Se connecter' }}
+      </button>
+      <p class="text-center mt-3 mb-0">
         Pas de compte ? <a routerLink="/register">S'inscrire</a>
       </p>
     </form>

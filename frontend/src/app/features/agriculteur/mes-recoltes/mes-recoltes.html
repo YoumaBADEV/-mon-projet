@@ -42,7 +42,7 @@
 
   <h5 class="mb-3">Mes produits publiés</h5>
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped align-middle">
       <thead>
         <tr>
           <th>Produit</th>
@@ -55,17 +55,31 @@
       <tbody>
         @for (p of mesProduits; track p.id) {
           <tr>
-            <td>{{ p.nom_produit }}</td>
-            <td>{{ p.quantite }} {{ p.unite }}</td>
-            <td>{{ p.prix_propose }} FCFA</td>
-            <td>
-              <span class="badge" [class.bg-success]="p.statut === 'disponible'" [class.bg-secondary]="p.statut === 'vendu'">
-                {{ p.statut }}
-              </span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-outline-danger" (click)="onDelete(p.id!)">Supprimer</button>
-            </td>
+            @if (editingId === p.id) {
+              <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editNom" name="editNom"></td>
+              <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editQuantite" name="editQuantite" min="0"></td>
+              <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editPrix" name="editPrix" min="0"></td>
+              <td>
+                <span class="badge bg-success">{{ p.statut }}</span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-success me-1" (click)="onSave(p.id!)">Enregistrer</button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="onCancelEdit()">Annuler</button>
+              </td>
+            } @else {
+              <td>{{ p.nom_produit }}</td>
+              <td>{{ p.quantite }} {{ p.unite }}</td>
+              <td>{{ p.prix_propose }} FCFA</td>
+              <td>
+                <span class="badge" [class.bg-success]="p.statut === 'disponible'" [class.bg-secondary]="p.statut === 'vendu'">
+                  {{ p.statut }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="onEdit(p)">Modifier</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="onDelete(p.id!)">Supprimer</button>
+              </td>
+            }
           </tr>
         }
       </tbody>

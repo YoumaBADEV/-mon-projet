@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProduitService, Produit } from '../../../core/services/produit';
 import { Auth } from '../../../core/services/auth';
@@ -21,7 +21,17 @@ export class MesRecoltes implements OnInit {
   errorMessage = '';
   successMessage = '';
 
-  constructor(private produitService: ProduitService, private authService: Auth) {}
+  // Modification en cours
+  editingId: number | null = null;
+  editNom = '';
+  editQuantite: number | null = null;
+  editPrix: number | null = null;
+
+  constructor(
+    private produitService: ProduitService,
+    private authService: Auth,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     this.loadProduits();
@@ -32,9 +42,11 @@ export class MesRecoltes implements OnInit {
     this.produitService.getAll().subscribe({
       next: (produits) => {
         this.mesProduits = produits.filter((p) => p.agriculteur_id === user?.id);
+        this.cdr.markForCheck();
       },
       error: () => {
         this.errorMessage = 'Impossible de charger tes produits.';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -61,10 +73,47 @@ export class MesRecoltes implements OnInit {
         this.prix_propose = null;
         this.localisation = '';
         this.loadProduits();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
         this.errorMessage = err.error?.message || "Erreur lors de l'ajout.";
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  onEdit(p: Produit) {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.editingId = p.id!;
+    this.editNom = p.nom_produit;
+    this.editQuantite = Number(p.quantite);
+    this.editPrix = Number(p.prix_propose);
+  }
+
+  onCancelEdit() {
+    this.editingId = null;
+  }
+
+  onSave(id: number) {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.produitService.update(id, {
+      nom_produit: this.editNom,
+      quantite: this.editQuantite!,
+      prix_propose: this.editPrix!,
+    }).subscribe({
+      next: () => {
+        this.editingId = null;
+        this.successMessage = 'Produit modifié avec succès !';
+        this.loadProduits();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Erreur lors de la modification.';
+        this.cdr.markForCheck();
       },
     });
   }
@@ -76,6 +125,7 @@ export class MesRecoltes implements OnInit {
       next: () => this.loadProduits(),
       error: () => {
         this.errorMessage = 'Erreur lors de la suppression.';
+        this.cdr.markForCheck();
       },
     });
   }
