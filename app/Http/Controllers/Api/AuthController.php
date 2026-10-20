@@ -15,12 +15,15 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:agriculteur,acheteur,admin',
             'telephone' => 'nullable|string|max:20',
             'localisation' => 'nullable|string|max:255',
+            'adresse' => 'nullable|string|max:255',
+            'matricule' => 'nullable|string|max:50|unique:users',
         ]);
 
         if ($validator->fails()) {
@@ -28,12 +31,15 @@ class AuthController extends Controller
         }
 
         $user = User::create([
-            'name' => $request->name,
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'telephone' => $request->telephone,
             'localisation' => $request->localisation,
+            'adresse' => $request->adresse,
+            'matricule' => $request->matricule,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;

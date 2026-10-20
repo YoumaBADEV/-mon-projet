@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
@@ -15,7 +15,11 @@ export class Login {
   loading = false;
   errorMessage = '';
 
-  constructor(private authService: Auth, private router: Router) {}
+  constructor(
+    private authService: Auth,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   onSubmit() {
     this.errorMessage = '';
@@ -32,7 +36,14 @@ export class Login {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect.';
+        if (err.status === 0) {
+          this.errorMessage = 'Serveur injoignable. Vérifie que le backend est lancé.';
+        } else if (err.status === 422 && err.error?.errors) {
+          this.errorMessage = Object.values(err.error.errors).flat().join(' ');
+        } else {
+          this.errorMessage = err.error?.message || 'Email ou mot de passe incorrect.';
+        }
+        this.cdr.markForCheck();
       },
     });
   }

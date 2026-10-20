@@ -14,6 +14,8 @@ class Produit extends Model
     protected $fillable = [
         'agriculteur_id',
         'nom_produit',
+        'description',
+        'categorie_id',
         'quantite',
         'unite',
         'prix_propose',
@@ -29,6 +31,11 @@ class Produit extends Model
     public function agriculteur(): BelongsTo
     {
         return $this->belongsTo(User::class, 'agriculteur_id');
+    }
+
+    public function categorie(): BelongsTo
+    {
+        return $this->belongsTo(Categorie::class);
     }
 
     public function ventes(): HasMany

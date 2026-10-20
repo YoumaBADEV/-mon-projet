@@ -1,0 +1,25 @@
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">🌾 Oracle de Prix</div>
+
+    <nav class="nav flex-column">
+      @for (item of menu; track item.path) {
+        <a class="nav-link" [routerLink]="item.path" routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: true }">
+          <span class="me-2">{{ item.icon }}</span>{{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="small text-white-50">Connecté en tant que</div>
+      <div class="fw-semibold">{{ userName }}</div>
+      <span class="badge bg-success mb-3 text-capitalize">{{ role }}</span>
+      <button class="btn btn-outline-light btn-sm w-100" (click)="onLogout()">Déconnexion</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

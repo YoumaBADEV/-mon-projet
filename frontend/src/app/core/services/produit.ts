@@ -11,6 +11,7 @@ export interface Produit {
   prix_propose: number;
   localisation?: string;
   statut?: 'disponible' | 'vendu';
+  agriculteur?: { id: number; name: string; telephone?: string | null; email?: string };
 }
 
 @Injectable({
