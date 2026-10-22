@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProduitService, Produit } from '../../../core/services/produit';
+import { CategorieService, Categorie } from '../../../core/services/categorie';
 import { Auth } from '../../../core/services/auth';
 
 @Component({
@@ -11,11 +12,14 @@ import { Auth } from '../../../core/services/auth';
 })
 export class MesRecoltes implements OnInit {
   nom_produit = '';
+  description = '';
+  categorie_id: number | null = null;
   quantite: number | null = null;
   unite = 'kg';
   prix_propose: number | null = null;
   localisation = '';
 
+  categories: Categorie[] = [];
   mesProduits: Produit[] = [];
   loading = false;
   errorMessage = '';
@@ -29,12 +33,26 @@ export class MesRecoltes implements OnInit {
 
   constructor(
     private produitService: ProduitService,
+    private categorieService: CategorieService,
     private authService: Auth,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.loadProduits();
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.categorieService.getAll().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        // La catégorie est facultative : on ignore l'erreur
+      },
+    });
   }
 
   loadProduits() {
@@ -58,6 +76,8 @@ export class MesRecoltes implements OnInit {
 
     const produit: Produit = {
       nom_produit: this.nom_produit,
+      description: this.description || undefined,
+      categorie_id: this.categorie_id ?? undefined,
       quantite: this.quantite!,
       unite: this.unite,
       prix_propose: this.prix_propose!,
@@ -69,6 +89,8 @@ export class MesRecoltes implements OnInit {
         this.loading = false;
         this.successMessage = 'Produit ajouté avec succès !';
         this.nom_produit = '';
+        this.description = '';
+        this.categorie_id = null;
         this.quantite = null;
         this.prix_propose = null;
         this.localisation = '';

@@ -2,8 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
+export interface User {
+  id: number;
+  nom?: string | null;
+  prenom?: string | null;
+  name?: string | null;
+  email: string;
+  role: string;
+  telephone?: string | null;
+  localisation?: string | null;
+  adresse?: string | null;
+}
+
 interface AuthResponse {
-  user: { id: number; name: string; email: string; role: string };
+  user: User;
   token: string;
 }
 
@@ -16,13 +28,15 @@ export class Auth {
   constructor(private http: HttpClient) {}
 
   register(data: {
-    name: string;
+    nom: string;
+    prenom: string;
     email: string;
     password: string;
     password_confirmation: string;
     role: string;
     telephone?: string;
     localisation?: string;
+    adresse?: string;
   }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
       tap((res) => this.saveSession(res))
@@ -44,9 +58,17 @@ export class Auth {
     return localStorage.getItem('token');
   }
 
-  getUser(): any {
+  getUser(): User | null {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  // Prénom + nom, ou l'ancien champ "name" pour les comptes créés avant le changement
+  getUserName(): string {
+    const u = this.getUser();
+    if (!u) return '';
+    const complet = [u.prenom, u.nom].filter(Boolean).join(' ');
+    return complet || u.name || '';
   }
 
   logout() {

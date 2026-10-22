@@ -21,7 +21,7 @@ export class Layout {
 
   constructor(private authService: Auth, private router: Router) {
     const user = this.authService.getUser();
-    this.userName = user?.name || '';
+    this.userName = this.authService.getUserName();
     this.role = user?.role || '';
 
     if (this.role === 'agriculteur') {

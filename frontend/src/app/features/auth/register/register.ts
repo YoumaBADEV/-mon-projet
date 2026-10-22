@@ -10,13 +10,15 @@ import { Auth } from '../../../core/services/auth';
   styleUrl: './register.css',
 })
 export class Register {
-  name = '';
+  nom = '';
+  prenom = '';
   email = '';
   password = '';
   password_confirmation = '';
   role = '';
   telephone = '';
   localisation = '';
+  adresse = '';
   loading = false;
   errorMessage = '';
 
@@ -31,13 +33,15 @@ export class Register {
     this.loading = true;
 
     this.authService.register({
-      name: this.name,
+      nom: this.nom,
+      prenom: this.prenom,
       email: this.email,
       password: this.password,
       password_confirmation: this.password_confirmation,
       role: this.role,
       telephone: this.telephone || undefined,
       localisation: this.localisation || undefined,
+      adresse: this.adresse || undefined,
     }).subscribe({
       next: (res) => {
         this.loading = false;
