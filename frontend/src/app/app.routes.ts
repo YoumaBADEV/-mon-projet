@@ -8,9 +8,10 @@ import { ConsulterPrix } from './features/acheteur/consulter-prix/consulter-prix
 import { Historique } from './features/acheteur/historique/historique';
 import { Layout } from './shared/layout/layout';
 import { authGuard } from './core/guards/auth-guard';
+import { Home } from './features/home/home';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', component: Home, pathMatch: 'full' },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   {

@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProduitService, Produit } from '../../../core/services/produit';
+import { CategorieService, Categorie } from '../../../core/services/categorie';
 import { VenteService } from '../../../core/services/vente';
 
 @Component({
@@ -11,22 +12,38 @@ import { VenteService } from '../../../core/services/vente';
 })
 export class ConsulterPrix implements OnInit {
   produits: Produit[] = [];
+  categories: Categorie[] = [];
   quantites: Record<number, number> = {};
   errorMessage = '';
   successMessage = '';
 
   recherche = '';
+  categorieFiltre: number | null = null;
   localisationFiltre = '';
   tri = '';
 
   constructor(
     private produitService: ProduitService,
+    private categorieService: CategorieService,
     private venteService: VenteService,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
     this.loadProduits();
+    this.loadCategories();
+  }
+
+  loadCategories() {
+    this.categorieService.getAll().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        // Le filtre par catégorie est facultatif : on ignore l'erreur
+      },
+    });
   }
 
   loadProduits() {
@@ -55,6 +72,10 @@ export class ConsulterPrix implements OnInit {
       p.nom_produit.toLowerCase().includes(this.recherche.toLowerCase().trim()),
     );
 
+    if (this.categorieFiltre !== null) {
+      liste = liste.filter((p) => p.categorie_id === this.categorieFiltre);
+    }
+
     if (this.localisationFiltre) {
       liste = liste.filter((p) => p.localisation === this.localisationFiltre);
     }
@@ -70,6 +91,7 @@ export class ConsulterPrix implements OnInit {
 
   reinitialiser() {
     this.recherche = '';
+    this.categorieFiltre = null;
     this.localisationFiltre = '';
     this.tri = '';
   }

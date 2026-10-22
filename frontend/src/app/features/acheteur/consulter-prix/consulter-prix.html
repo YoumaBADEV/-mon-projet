@@ -16,20 +16,29 @@
 <div class="card shadow-sm border-0 mb-4">
   <div class="card-body">
     <div class="row g-2 align-items-end">
-      <div class="col-md-4">
+      <div class="col-md-6 col-lg-3">
         <label class="form-label small text-muted mb-1">Rechercher un produit</label>
         <input type="text" class="form-control" placeholder="Ex : tomate" [(ngModel)]="recherche" name="recherche">
       </div>
-      <div class="col-md-3">
+      <div class="col-md-6 col-lg-2">
+        <label class="form-label small text-muted mb-1">Catégorie</label>
+        <select class="form-select" [(ngModel)]="categorieFiltre" name="categorieFiltre">
+          <option [ngValue]="null">Toutes</option>
+          @for (c of categories; track c.id) {
+            <option [ngValue]="c.id">{{ c.nom }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-4 col-lg-2">
         <label class="form-label small text-muted mb-1">Localisation</label>
         <select class="form-select" [(ngModel)]="localisationFiltre" name="localisationFiltre">
-          <option value="">Toutes les localisations</option>
+          <option value="">Toutes</option>
           @for (l of localisations; track l) {
             <option [value]="l">{{ l }}</option>
           }
         </select>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-5 col-lg-3">
         <label class="form-label small text-muted mb-1">Trier par prix</label>
         <select class="form-select" [(ngModel)]="tri" name="tri">
           <option value="">Sans tri</option>
@@ -37,7 +46,7 @@
           <option value="desc">Du plus cher au moins cher</option>
         </select>
       </div>
-      <div class="col-md-2">
+      <div class="col-md-3 col-lg-2">
         <button class="btn btn-outline-secondary w-100" (click)="reinitialiser()">Réinitialiser</button>
       </div>
     </div>
@@ -60,12 +69,20 @@
             <span class="badge bg-success-subtle text-success-emphasis">{{ p.quantite }} {{ p.unite }}</span>
           </div>
 
+          @if (p.categorie) {
+            <span class="badge bg-warning-subtle text-warning-emphasis mb-2">{{ p.categorie.nom }}</span>
+          }
+
           <div class="price mb-1">{{ p.prix_propose }} <small>FCFA / {{ p.unite }}</small></div>
           <p class="text-muted small mb-2">📍 {{ p.localisation || 'Non précisé' }}</p>
 
+          @if (p.description) {
+            <p class="small mb-2">{{ p.description }}</p>
+          }
+
           @if (p.agriculteur) {
             <p class="mb-3 small">
-              👨‍🌾 <strong>{{ p.agriculteur.name }}</strong>
+              👨‍🌾 <strong>{{ p.agriculteur.prenom ? p.agriculteur.prenom + ' ' + p.agriculteur.nom : p.agriculteur.name }}</strong>
               @if (p.agriculteur.telephone) {
                 <br>📞 <a [href]="'tel:' + p.agriculteur.telephone">{{ p.agriculteur.telephone }}</a>
               }
