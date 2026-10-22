@@ -1,0 +1,122 @@
+<header class="topbar">
+  <nav class="container d-flex align-items-center justify-content-between py-3">
+    <a routerLink="/" class="brand">🌾 Oracle de Prix</a>
+    <div class="d-flex align-items-center gap-2">
+      <a href="#fonctionnalites" class="nav-pill d-none d-md-inline-block">Fonctionnalités</a>
+      <a href="#comment" class="nav-pill d-none d-md-inline-block">Comment ça marche</a>
+      @if (connecte) {
+        <a [routerLink]="espacePath" class="btn btn-success">Mon espace</a>
+      } @else {
+        <a routerLink="/login" class="nav-pill">Se connecter</a>
+        <a routerLink="/register" class="btn btn-success">Créer un compte</a>
+      }
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <span class="hero-badge">
+        🌾 {{ nbProduits }} produit{{ nbProduits > 1 ? 's' : '' }} disponible{{ nbProduits > 1 ? 's' : '' }} en ce moment
+      </span>
+      <h1 class="hero-title">
+        Vends au <span class="accent">juste prix</span>,<br>achète en toute confiance
+      </h1>
+      <p class="hero-text">
+        Oracle de Prix met en relation agriculteurs et acheteurs : publie tes récoltes,
+        compare les prix proposés et achète directement auprès des producteurs.
+      </p>
+      <div class="d-flex flex-wrap gap-3">
+        @if (connecte) {
+          <a [routerLink]="espacePath" class="btn btn-success btn-lg">Accéder à mon espace</a>
+        } @else {
+          <a routerLink="/register" class="btn btn-success btn-lg">Créer un compte</a>
+          <a routerLink="/login" class="btn btn-outline-light btn-lg">Se connecter</a>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="fonctionnalites" class="section">
+  <div class="container">
+    <h2 class="section-title text-center">Tout ce qu'il faut pour vendre et acheter</h2>
+    <p class="text-center text-muted mb-5">Une seule application pour les agriculteurs et pour les acheteurs.</p>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-xl-3">
+        <div class="card feature-card shadow-sm h-100">
+          <div class="card-body">
+            <div class="feature-icon">💰</div>
+            <h5>Prix du marché</h5>
+            <p class="text-muted mb-0">Compare les prix proposés par les agriculteurs et filtre par produit ou par localisation.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card feature-card shadow-sm h-100">
+          <div class="card-body">
+            <div class="feature-icon">🌾</div>
+            <h5>Publier ses récoltes</h5>
+            <p class="text-muted mb-0">Ajoute, modifie et retire tes produits en quelques clics, avec leur prix et leur quantité.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card feature-card shadow-sm h-100">
+          <div class="card-body">
+            <div class="feature-icon">🛒</div>
+            <h5>Acheter en direct</h5>
+            <p class="text-muted mb-0">Choisis la quantité et achète directement, avec les coordonnées de l'agriculteur.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card feature-card shadow-sm h-100">
+          <div class="card-body">
+            <div class="feature-icon">🧾</div>
+            <h5>Suivre ses achats</h5>
+            <p class="text-muted mb-0">Retrouve l'historique de tes achats et le total dépensé.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comment" class="section section-alt">
+  <div class="container">
+    <h2 class="section-title text-center mb-5">Comment ça marche</h2>
+
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="step-number">1</div>
+        <h5>Crée ton compte</h5>
+        <p class="text-muted">Inscris-toi comme agriculteur ou comme acheteur.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="step-number">2</div>
+        <h5>Publie ou compare</h5>
+        <p class="text-muted">L'agriculteur publie ses récoltes, l'acheteur compare les prix du marché.</p>
+      </div>
+      <div class="col-md-4">
+        <div class="step-number">3</div>
+        <h5>Vends et achète</h5>
+        <p class="text-muted">L'achat est enregistré et le stock est mis à jour automatiquement.</p>
+      </div>
+    </div>
+
+    @if (!connecte) {
+      <div class="text-center mt-5">
+        <a routerLink="/register" class="btn btn-success btn-lg">Commencer maintenant</a>
+      </div>
+    }
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container text-center">
+    🌾 Oracle de Prix · © 2026 · Projet de fin d'études
+  </div>
+</footer>

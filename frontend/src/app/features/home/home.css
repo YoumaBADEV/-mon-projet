@@ -1,0 +1,124 @@
+:host {
+  display: block;
+}
+
+.topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.3rem;
+  text-decoration: none;
+}
+
+.nav-pill {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.6rem;
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  background:
+    linear-gradient(90deg, rgba(10, 30, 18, 0.85), rgba(10, 30, 18, 0.35)),
+    url('/fond-accueil.jpg') center / cover no-repeat;
+  background-color: #14331f;
+}
+
+.hero-inner {
+  max-width: 720px;
+  padding: 6rem 0 4rem;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 2rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title {
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+}
+
+.accent {
+  color: #f08c2b;
+}
+
+.hero-text {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.88);
+  margin-bottom: 2rem;
+}
+
+.section {
+  padding: 4rem 0;
+}
+
+.section-alt {
+  background: #f4f7f4;
+}
+
+.section-title {
+  font-weight: 700;
+  color: #14331f;
+}
+
+.feature-card {
+  border: 0;
+  border-radius: 0.9rem;
+}
+
+.feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.7rem;
+  background: #e6f2ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #14331f;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.footer {
+  background: #14331f;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 1.5rem 0;
+}

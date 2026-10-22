@@ -6,12 +6,22 @@ export interface Produit {
   id?: number;
   agriculteur_id?: number;
   nom_produit: string;
+  description?: string | null;
+  categorie_id?: number | null;
   quantite: number;
   unite?: string;
   prix_propose: number;
   localisation?: string;
   statut?: 'disponible' | 'vendu';
-  agriculteur?: { id: number; name: string; telephone?: string | null; email?: string };
+  agriculteur?: {
+    id: number;
+    nom?: string | null;
+    prenom?: string | null;
+    name?: string | null;
+    telephone?: string | null;
+    email?: string;
+  };
+  categorie?: { id: number; nom: string } | null;
 }
 
 @Injectable({

@@ -23,7 +23,7 @@ export class Dashboard implements OnInit {
     private venteService: VenteService,
     private cdr: ChangeDetectorRef,
   ) {
-    this.userName = this.authService.getUser()?.name || '';
+    this.userName = this.authService.getUserName();
   }
 
   ngOnInit() {
