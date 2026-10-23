@@ -24,19 +24,20 @@ class HistoriquePrix extends Model
     ];
 
     /**
-     * Calcule et enregistre le prix moyen d'un produit
-     * à partir de toutes les ventes enregistrées.
+     * Prix moyen par unite (ex: par kg) = total des ventes / total des quantites vendues.
      */
     public static function mettreAJourPrixMoyen(string $nomProduit): void
     {
-        $prixMoyen = Vente::whereHas('produit', function ($query) use ($nomProduit) {
+        $stats = Vente::whereHas('produit', function ($query) use ($nomProduit) {
             $query->where('nom_produit', $nomProduit);
-        })->avg('prix_final');
+        })
+            ->selectRaw('SUM(prix_final) as total_prix, SUM(quantite_achetee) as total_quantite')
+            ->first();
 
-        if ($prixMoyen !== null) {
+        if ($stats && $stats->total_quantite > 0) {
             self::create([
                 'nom_produit' => $nomProduit,
-                'prix_moyen' => round($prixMoyen, 2),
+                'prix_moyen' => round($stats->total_prix / $stats->total_quantite, 2),
                 'date_calcul' => now()->toDateString(),
             ]);
         }

@@ -19,6 +19,22 @@ class ProduitController extends Controller
         return response()->json($produits);
     }
 
+    // GET /api/mes-produits : tous les produits de l'agriculteur connecté
+    // (vendus, en attente et refusés inclus)
+    public function mesProduits(Request $request): JsonResponse
+    {
+        if ($request->user()->role !== 'agriculteur') {
+            return response()->json(['message' => 'Reserve aux agriculteurs.'], 403);
+        }
+
+        $produits = Produit::with('categorie')
+            ->where('agriculteur_id', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return response()->json($produits);
+    }
+
     // POST /api/produits : proposer un produit
     public function store(Request $request): JsonResponse
     {

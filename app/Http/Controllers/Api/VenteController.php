@@ -7,18 +7,24 @@ use App\Models\Produit;
 use App\Models\Vente;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class VenteController extends Controller
 {
     // GET /api/ventes
+    // Agriculteur : les ventes de SES produits. Autres : leurs propres achats.
     public function index(Request $request): JsonResponse
     {
-        $ventes = Vente::with('produit', 'acheteur')
-            ->where('acheteur_id', $request->user()->id)
-            ->latest()
-            ->get();
+        $user = $request->user();
+        $query = Vente::with('produit', 'acheteur')->latest();
 
-        return response()->json($ventes);
+        if ($user->role === 'agriculteur') {
+            $query->whereHas('produit', fn ($q) => $q->where('agriculteur_id', $user->id));
+        } else {
+            $query->where('acheteur_id', $user->id);
+        }
+
+        return response()->json($query->get());
     }
 
     // POST /api/ventes
@@ -31,44 +37,52 @@ class VenteController extends Controller
         $validated = $request->validate([
             'produit_id' => 'required|exists:produits,id',
             'quantite_achetee' => 'required|numeric|min:0.01',
-            'prix_final' => 'required|numeric|min:0',
         ]);
 
-        $produit = Produit::findOrFail($validated['produit_id']);
+        return DB::transaction(function () use ($request, $validated) {
+            // lockForUpdate : evite que deux achats simultanes depassent le stock
+            $produit = Produit::lockForUpdate()->findOrFail($validated['produit_id']);
 
-        if ($produit->statut !== 'disponible') {
-            return response()->json(['message' => 'Ce produit n\'est plus disponible.'], 422);
-        }
+            if ($produit->statut !== 'disponible') {
+                return response()->json(['message' => 'Ce produit n\'est plus disponible.'], 422);
+            }
 
-        if ($validated['quantite_achetee'] > $produit->quantite) {
-            return response()->json([
-                'message' => 'Quantite demandee superieure au stock disponible.',
-                'stock_disponible' => $produit->quantite,
-            ], 422);
-        }
+            if ($validated['quantite_achetee'] > $produit->quantite) {
+                return response()->json([
+                    'message' => 'Quantite demandee superieure au stock disponible.',
+                    'stock_disponible' => $produit->quantite,
+                ], 422);
+            }
 
-        $validated['acheteur_id'] = $request->user()->id;
-        $vente = Vente::create($validated);
+            // Prix calcule par le serveur, jamais lu dans la requete
+            $vente = Vente::create([
+                'produit_id' => $produit->id,
+                'acheteur_id' => $request->user()->id,
+                'quantite_achetee' => $validated['quantite_achetee'],
+                'prix_final' => round($validated['quantite_achetee'] * $produit->prix_propose, 2),
+            ]);
 
-        $nouvelleQuantite = $produit->quantite - $validated['quantite_achetee'];
-        $produit->quantite = $nouvelleQuantite;
+            $produit->quantite = $produit->quantite - $validated['quantite_achetee'];
+            if ($produit->quantite <= 0) {
+                $produit->statut = 'vendu';
+            }
+            $produit->save();
 
-        if ($nouvelleQuantite <= 0) {
-            $produit->statut = 'vendu';
-        }
-
-        $produit->save();
-
-        return response()->json($vente->load('produit', 'acheteur'), 201);
+            return response()->json($vente->load('produit', 'acheteur'), 201);
+        });
     }
 
     // GET /api/ventes/{id}
+    // Visible par l'acheteur concerne ou par l'agriculteur proprietaire du produit
     public function show(Request $request, Vente $vente): JsonResponse
     {
-        if ($vente->acheteur_id !== $request->user()->id) {
+        $vente->load('produit', 'acheteur');
+        $userId = $request->user()->id;
+
+        if ($vente->acheteur_id !== $userId && $vente->produit->agriculteur_id !== $userId) {
             return response()->json(['message' => 'Acces non autorise.'], 403);
         }
 
-        return response()->json($vente->load('produit', 'acheteur'));
+        return response()->json($vente);
     }
 }
