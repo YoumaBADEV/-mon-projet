@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Produits
+    Route::get('mes-produits', [ProduitController::class, 'mesProduits']);
     Route::post('produits', [ProduitController::class, 'store']);
     Route::put('produits/{produit}', [ProduitController::class, 'update']);
     Route::patch('produits/{produit}', [ProduitController::class, 'update']);
