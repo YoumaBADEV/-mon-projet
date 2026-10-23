@@ -9,18 +9,24 @@ use Illuminate\Http\JsonResponse;
 
 class ProduitController extends Controller
 {
-    // GET /api/produits
+    // GET /api/produits : afficher les produits validés
     public function index(): JsonResponse
     {
-        $produits = Produit::with('agriculteur', 'categorie')->where('statut', 'disponible')->get();
+        $produits = Produit::with('agriculteur', 'categorie')
+            ->where('statut', 'disponible')
+            ->get();
+
         return response()->json($produits);
     }
 
-    // POST /api/produits
+    // POST /api/produits : proposer un produit
     public function store(Request $request): JsonResponse
     {
-        if ($request->user()->role !== 'agriculteur') {
-            return response()->json(['message' => 'Seul un agriculteur peut publier un produit.'], 403);
+        if (!$request->user() ||
+            $request->user()->role !== 'agriculteur') {
+            return response()->json([
+                'message' => 'Seul un agriculteur connecté peut proposer un produit.'
+            ], 403);
         }
 
         $validated = $request->validate([
@@ -34,45 +40,135 @@ class ProduitController extends Controller
         ]);
 
         $validated['agriculteur_id'] = $request->user()->id;
+        $validated['statut'] = 'en_attente';
 
         $produit = Produit::create($validated);
-        return response()->json($produit->load('categorie'), 201);
+
+        return response()->json([
+            'message' => 'Produit soumis pour validation.',
+            'produit' => $produit->load('categorie')
+        ], 201);
     }
 
-    // GET /api/produits/{id}
+    // GET /api/produits/{produit}
     public function show(Produit $produit): JsonResponse
     {
-        return response()->json($produit->load('agriculteur', 'categorie', 'ventes'));
+        return response()->json(
+            $produit->load('agriculteur', 'categorie', 'ventes')
+        );
     }
 
-    // PUT/PATCH /api/produits/{id}
-    public function update(Request $request, Produit $produit): JsonResponse
-    {
-        if ($produit->agriculteur_id !== $request->user()->id) {
-            return response()->json(['message' => 'Vous ne pouvez modifier que vos propres produits.'], 403);
+    // PUT/PATCH /api/produits/{produit}
+    public function update(
+        Request $request,
+        Produit $produit
+    ): JsonResponse {
+        if (!$request->user() ||
+            $produit->agriculteur_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Vous ne pouvez modifier que vos propres produits.'
+            ], 403);
         }
 
         $validated = $request->validate([
-            'nom_produit' => 'sometimes|string|max:255',
+            'nom_produit' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string|max:2000',
             'categorie_id' => 'sometimes|nullable|exists:categories,id',
-            'quantite' => 'sometimes|numeric|min:0',
-            'prix_propose' => 'sometimes|numeric|min:0',
-            'statut' => 'sometimes|in:disponible,vendu',
+            'quantite' => 'sometimes|required|numeric|min:0',
+            'unite' => 'sometimes|nullable|string|max:20',
+            'prix_propose' => 'sometimes|required|numeric|min:0',
+            'localisation' => 'sometimes|nullable|string|max:255',
         ]);
 
+        // L'agriculteur ne peut pas changer le statut
         $produit->update($validated);
+
         return response()->json($produit->load('categorie'));
     }
 
-    // DELETE /api/produits/{id}
-    public function destroy(Request $request, Produit $produit): JsonResponse
-    {
-        if ($produit->agriculteur_id !== $request->user()->id) {
-            return response()->json(['message' => 'Vous ne pouvez supprimer que vos propres produits.'], 403);
+    // DELETE /api/produits/{produit}
+    public function destroy(
+        Request $request,
+        Produit $produit
+    ): JsonResponse {
+        if (!$request->user() ||
+            $produit->agriculteur_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Vous ne pouvez supprimer que vos propres produits.'
+            ], 403);
         }
 
         $produit->delete();
+
         return response()->json(null, 204);
+    }
+
+    // GET /api/admin/produits/en-attente
+    public function produitsEnAttente(Request $request): JsonResponse
+    {
+        if (!$request->user() ||
+            $request->user()->role !== 'admin') {
+            return response()->json([
+                'message' => 'Accès réservé à l’administrateur.'
+            ], 403);
+        }
+
+        $produits = Produit::with('agriculteur')
+            ->where('statut', 'en_attente')
+            ->get();
+
+        return response()->json($produits);
+    }
+
+    // PUT /api/admin/produits/{produit}/valider
+    public function validerProduit(
+        Request $request,
+        Produit $produit
+    ): JsonResponse {
+        if (!$request->user() ||
+            $request->user()->role !== 'admin') {
+            return response()->json([
+                'message' => 'Accès réservé à l’administrateur.'
+            ], 403);
+        }
+
+        if ($produit->statut !== 'en_attente') {
+            return response()->json([
+                'message' => 'Ce produit n’est pas en attente de validation.'
+            ], 422);
+        }
+
+        $produit->update(['statut' => 'disponible']);
+
+        return response()->json([
+            'message' => 'Produit validé avec succès.',
+            'produit' => $produit
+        ]);
+    }
+
+    // PUT /api/admin/produits/{produit}/refuser
+    public function refuserProduit(
+        Request $request,
+        Produit $produit
+    ): JsonResponse {
+        if (!$request->user() ||
+            $request->user()->role !== 'admin') {
+            return response()->json([
+                'message' => 'Accès réservé à l’administrateur.'
+            ], 403);
+        }
+
+        if ($produit->statut !== 'en_attente') {
+            return response()->json([
+                'message' => 'Ce produit n’est pas en attente de validation.'
+            ], 422);
+        }
+
+        $produit->update(['statut' => 'refuse']);
+
+        return response()->json([
+            'message' => 'Produit refusé.',
+            'produit' => $produit
+        ]);
     }
 }
