@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Produits
+    Route::get('mes-produits', [ProduitController::class, 'mesProduits']);
     Route::post('produits', [ProduitController::class, 'store']);
     Route::put('produits/{produit}', [ProduitController::class, 'update']);
     Route::patch('produits/{produit}', [ProduitController::class, 'update']);
@@ -53,19 +54,35 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('categories/{categorie}', [CategorieController::class, 'update']);
     Route::patch('categories/{categorie}', [CategorieController::class, 'update']);
     Route::delete('categories/{categorie}', [CategorieController::class, 'destroy']);
+
+    // ====================
+    // VALIDATION DES PRODUITS PAR L'ADMINISTRATEUR
+    // ====================
+
+    Route::get('admin/produits/en-attente', [
+        ProduitController::class,
+        'produitsEnAttente'
+    ]);
+
+    Route::put('admin/produits/{produit}/valider', [
+        ProduitController::class,
+        'validerProduit'
+    ]);
+
+    Route::put('admin/produits/{produit}/refuser', [
+        ProduitController::class,
+        'refuserProduit'
+    ]);
 });
 
 
 // ====================
-// ROUTES ADMIN
+// ROUTES ADMINISTRATION DES UTILISATEURS
 // ====================
 
 Route::get('/admin/users', [AdminController::class, 'index']);
-
 Route::get('/admin/users/{id}', [AdminController::class, 'show']);
-
 Route::put('/admin/users/{id}', [AdminController::class, 'update']);
-
 Route::delete('/admin/users/{id}', [AdminController::class, 'destroy']);
 
 
@@ -74,7 +91,8 @@ Route::delete('/admin/users/{id}', [AdminController::class, 'destroy']);
 // ====================
 
 Route::get('/price-histories', [PriceHistoryController::class, 'index']);
-
 Route::post('/price-histories', [PriceHistoryController::class, 'store']);
-
-Route::get('/price-histories/{product_name}', [PriceHistoryController::class, 'productHistory']);
+Route::get('/price-histories/{product_name}', [
+    PriceHistoryController::class,
+    'productHistory'
+]);
