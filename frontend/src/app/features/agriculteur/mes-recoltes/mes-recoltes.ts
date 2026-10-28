@@ -28,6 +28,8 @@ export class MesRecoltes implements OnInit {
   // Modification en cours
   editingId: number | null = null;
   editNom = '';
+  editDescription = '';
+  editCategorieId: number | null = null;
   editQuantite: number | null = null;
   editPrix: number | null = null;
 
@@ -110,6 +112,8 @@ export class MesRecoltes implements OnInit {
     this.successMessage = '';
     this.editingId = p.id!;
     this.editNom = p.nom_produit;
+    this.editDescription = p.description ?? '';
+    this.editCategorieId = p.categorie_id ?? null;
     this.editQuantite = Number(p.quantite);
     this.editPrix = Number(p.prix_propose);
   }
@@ -124,6 +128,8 @@ export class MesRecoltes implements OnInit {
 
     this.produitService.update(id, {
       nom_produit: this.editNom,
+      description: this.editDescription || null,
+      categorie_id: this.editCategorieId,
       quantite: this.editQuantite!,
       prix_propose: this.editPrix!,
     }).subscribe({

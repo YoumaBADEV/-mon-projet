@@ -71,8 +71,18 @@
       @for (p of mesProduits; track p.id) {
         <tr>
           @if (editingId === p.id) {
-            <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editNom" name="editNom"></td>
-            <td>{{ p.categorie?.nom || '—' }}</td>
+            <td>
+              <input type="text" class="form-control form-control-sm mb-1" [(ngModel)]="editNom" name="editNom">
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="editDescription" name="editDescription" placeholder="Description">
+            </td>
+            <td>
+              <select class="form-select form-select-sm" [(ngModel)]="editCategorieId" name="editCategorieId">
+                <option [ngValue]="null">Aucune</option>
+                @for (c of categories; track c.id) {
+                  <option [ngValue]="c.id">{{ c.nom }}</option>
+                }
+              </select>
+            </td>
             <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editQuantite" name="editQuantite" min="0"></td>
             <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editPrix" name="editPrix" min="0"></td>
             <td><span class="badge bg-success">{{ p.statut }}</span></td>
