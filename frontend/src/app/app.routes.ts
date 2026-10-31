@@ -15,6 +15,7 @@ import { Home } from './features/home/home';
 
 import { Admin } from './pages/admin/admin';
 import { HistoriquePrix } from './pages/historique-prix/historique-prix';
+import { ProduitsAValider } from './features/admin/produits-a-valider/produits-a-valider';
 
 export const routes: Routes = [
   { path: '', component: Home, pathMatch: 'full' },
@@ -62,6 +63,12 @@ export const routes: Routes = [
       {
         path: 'admin',
         component: Admin,
+        canActivate: [authGuard],
+        data: { roles: ['admin'] },
+      },
+      {
+        path: 'admin/produits',
+        component: ProduitsAValider,
         canActivate: [authGuard],
         data: { roles: ['admin'] },
       },

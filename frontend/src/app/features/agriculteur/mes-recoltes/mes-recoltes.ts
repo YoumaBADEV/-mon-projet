@@ -83,6 +83,7 @@ export class MesRecoltes implements OnInit {
 
   statutLibelle(statut?: string): string {
     if (!statut) return '';
+    if (statut === 'refuse') return 'refusé';
     return statut.replace('_', ' ');
   }
 

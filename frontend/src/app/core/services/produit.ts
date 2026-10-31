@@ -57,4 +57,24 @@ export class ProduitService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/produits/${id}`);
   }
+
+  // --- Administration : validation des produits ---
+
+  getEnAttente(): Observable<Produit[]> {
+    return this.http.get<Produit[]>(`${this.apiUrl}/admin/produits/en-attente`);
+  }
+
+  valider(id: number): Observable<{ message: string; produit: Produit }> {
+    return this.http.put<{ message: string; produit: Produit }>(
+      `${this.apiUrl}/admin/produits/${id}/valider`,
+      {},
+    );
+  }
+
+  refuser(id: number): Observable<{ message: string; produit: Produit }> {
+    return this.http.put<{ message: string; produit: Produit }>(
+      `${this.apiUrl}/admin/produits/${id}/refuser`,
+      {},
+    );
+  }
 }

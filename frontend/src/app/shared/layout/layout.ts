@@ -38,6 +38,7 @@ export class Layout {
     } else if (this.role === 'admin') {
       this.menu = [
         { label: 'Administration', icon: '🛠️', path: '/admin' },
+        { label: 'Produits à valider', icon: '✅', path: '/admin/produits' },
         { label: 'Historique des prix', icon: '📈', path: '/historique-prix' },
       ];
     }
