@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HistoriquePrixService, HistoriquePrixRecord } from '../../services/historique-prix.service';
 
@@ -10,6 +10,7 @@ import { HistoriquePrixService, HistoriquePrixRecord } from '../../services/hist
 })
 export class HistoriquePrix implements OnInit {
   private service = inject(HistoriquePrixService);
+  private cdr = inject(ChangeDetectorRef);
   historique: HistoriquePrixRecord[] = [];
   chargement = true;
   erreur = '';
@@ -17,13 +18,18 @@ export class HistoriquePrix implements OnInit {
   ngOnInit(): void {
     this.service.obtenirHistorique().subscribe({
       next: (donnees) => {
-        this.historique = donnees;
+        // Accepte un tableau direct ou une réponse du type { data: [...] }
+        this.historique = Array.isArray(donnees)
+          ? donnees
+          : ((donnees as any)?.data ?? []);
         this.chargement = false;
+        this.cdr.markForCheck();
       },
       error: () => {
         this.erreur = 'Impossible de charger les prix. Vérifiez que Laravel est démarré.';
         this.chargement = false;
-      }
+        this.cdr.markForCheck();
+      },
     });
   }
 }
