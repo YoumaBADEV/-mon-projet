@@ -54,7 +54,11 @@
   </form>
 </div>
 
-<h5 class="mb-3">Mes produits publiés</h5>
+<h5 class="mb-2">Mes produits publiés</h5>
+<p class="text-muted small mb-3">
+  Un produit « en attente » n'est visible par les acheteurs qu'après validation par l'administrateur.
+</p>
+
 <div class="table-responsive">
   <table class="table table-striped align-middle">
     <thead>
@@ -85,7 +89,7 @@
             </td>
             <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editQuantite" name="editQuantite" min="0"></td>
             <td><input type="number" class="form-control form-control-sm" [(ngModel)]="editPrix" name="editPrix" min="0"></td>
-            <td><span class="badge bg-success">{{ p.statut }}</span></td>
+            <td><span [class]="'badge ' + statutClasse(p.statut)">{{ statutLibelle(p.statut) }}</span></td>
             <td>
               <button class="btn btn-sm btn-success me-1" (click)="onSave(p.id!)">Enregistrer</button>
               <button class="btn btn-sm btn-outline-secondary" (click)="onCancelEdit()">Annuler</button>
@@ -100,11 +104,7 @@
             <td>{{ p.categorie?.nom || '—' }}</td>
             <td>{{ p.quantite }} {{ p.unite }}</td>
             <td>{{ p.prix_propose }} FCFA</td>
-            <td>
-              <span class="badge" [class.bg-success]="p.statut === 'disponible'" [class.bg-secondary]="p.statut === 'vendu'">
-                {{ p.statut }}
-              </span>
-            </td>
+            <td><span [class]="'badge ' + statutClasse(p.statut)">{{ statutLibelle(p.statut) }}</span></td>
             <td>
               <button class="btn btn-sm btn-outline-primary me-1" (click)="onEdit(p)">Modifier</button>
               <button class="btn btn-sm btn-outline-danger" (click)="onDelete(p.id!)">Supprimer</button>

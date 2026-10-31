@@ -6,7 +6,7 @@ export interface Vente {
   id?: number;
   produit_id: number;
   quantite_achetee: number;
-  prix_final: number;
+  prix_final?: number;
   acheteur_id?: number;
   produit?: any;
   created_at?: string;

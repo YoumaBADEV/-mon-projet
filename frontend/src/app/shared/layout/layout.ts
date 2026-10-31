@@ -35,6 +35,11 @@ export class Layout {
         { label: 'Prix du marché', icon: '💰', path: '/acheteur/consulter-prix' },
         { label: 'Mes achats', icon: '🧾', path: '/acheteur/historique' },
       ];
+    } else if (this.role === 'admin') {
+      this.menu = [
+        { label: 'Administration', icon: '🛠️', path: '/admin' },
+        { label: 'Historique des prix', icon: '📈', path: '/historique-prix' },
+      ];
     }
   }
 

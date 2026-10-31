@@ -71,6 +71,20 @@ export class Auth {
     return complet || u.name || '';
   }
 
+  // Page d'accueil de chaque rôle
+  getHomePath(role?: string | null): string {
+    switch (role) {
+      case 'agriculteur':
+        return '/agriculteur';
+      case 'acheteur':
+        return '/acheteur';
+      case 'admin':
+        return '/admin';
+      default:
+        return '/login';
+    }
+  }
+
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');

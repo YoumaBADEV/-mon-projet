@@ -28,11 +28,7 @@ export class Login {
     this.authService.login(this.email, this.password).subscribe({
       next: (res) => {
         this.loading = false;
-        if (res.user.role === 'agriculteur') {
-          this.router.navigate(['/agriculteur']);
-        } else {
-          this.router.navigate(['/acheteur']);
-        }
+        this.router.navigate([this.authService.getHomePath(res.user.role)]);
       },
       error: (err) => {
         this.loading = false;
