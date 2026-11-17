@@ -14,12 +14,10 @@ export const authGuard: CanActivateFn = (route) => {
     return router.createUrlTree(['/login']);
   }
 
-  // Connecté, mais pas le bon rôle pour cette page
+  // Connecté, mais pas le bon rôle pour cette page : retour à sa propre page d'accueil
   const roles = route.data?.['roles'] as string[] | undefined;
   if (roles && !roles.includes(user.role)) {
-    if (user.role === 'agriculteur') return router.createUrlTree(['/agriculteur']);
-    if (user.role === 'acheteur') return router.createUrlTree(['/acheteur']);
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree([authService.getHomePath(user.role)]);
   }
 
   return true;

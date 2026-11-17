@@ -43,20 +43,20 @@ export class Register {
       localisation: this.localisation || undefined,
       adresse: this.adresse || undefined,
     }).subscribe({
-      next: (res) => {
+      next: () => {
         this.loading = false;
-        if (res.user.role === 'agriculteur') {
-          this.router.navigate(['/agriculteur']);
-        } else {
-          this.router.navigate(['/acheteur']);
-        }
+        this.router.navigate(['/login'], { queryParams: { inscrit: '1' } });
       },
       error: (err) => {
         this.loading = false;
-        const errors = err.error?.errors;
-        this.errorMessage = errors
-          ? Object.values(errors).flat().join(' ')
-          : err.error?.message || "Erreur lors de l'inscription.";
+        if (err.status === 0) {
+          this.errorMessage = 'Serveur injoignable. Vérifie que le backend est lancé.';
+        } else {
+          const errors = err.error?.errors;
+          this.errorMessage = errors
+            ? Object.values(errors).flat().join(' ')
+            : err.error?.message || "Erreur lors de l'inscription.";
+        }
         this.cdr.markForCheck();
       },
     });

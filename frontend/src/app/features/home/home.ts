@@ -22,8 +22,7 @@ export class Home implements OnInit {
     const user = this.authService.getUser();
     if (this.authService.getToken() && user) {
       this.connecte = true;
-      this.espacePath =
-        user.role === 'agriculteur' ? '/agriculteur' : user.role === 'acheteur' ? '/acheteur' : '/login';
+      this.espacePath = this.authService.getHomePath(user.role);
     }
   }
 

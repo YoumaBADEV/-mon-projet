@@ -57,9 +57,8 @@
       <button type="submit" class="btn btn-success w-100" [disabled]="loading">
         {{ loading ? 'Inscription...' : "S'inscrire" }}
       </button>
-      <p class="text-center mt-3 mb-0">
-        Déjà un compte ? <a routerLink="/login">Se connecter</a>
-      </p>
+      <p class="text-center text-muted mt-3 mb-2">Déjà un compte ?</p>
+      <a routerLink="/login" class="btn btn-outline-success w-100">Se connecter</a>
     </form>
   </div>
 </div>

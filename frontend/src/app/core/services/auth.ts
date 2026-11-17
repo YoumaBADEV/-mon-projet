@@ -37,10 +37,13 @@ export class Auth {
     telephone?: string;
     localisation?: string;
     adresse?: string;
-  }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
-      tap((res) => this.saveSession(res))
-    );
+  }): Observable<{ message: string; user: User }> {
+    // Pas de session ouverte à l'inscription : l'utilisateur doit vérifier son email puis se connecter
+    return this.http.post<{ message: string; user: User }>(`${this.apiUrl}/register`, data);
+  }
+
+  renvoyerVerification(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/email/renvoyer`, { email });
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
@@ -69,6 +72,20 @@ export class Auth {
     if (!u) return '';
     const complet = [u.prenom, u.nom].filter(Boolean).join(' ');
     return complet || u.name || '';
+  }
+
+  // Page d'accueil de chaque rôle
+  getHomePath(role?: string | null): string {
+    switch (role) {
+      case 'agriculteur':
+        return '/agriculteur';
+      case 'acheteur':
+        return '/acheteur';
+      case 'admin':
+        return '/admin';
+      default:
+        return '/login';
+    }
   }
 
   logout() {

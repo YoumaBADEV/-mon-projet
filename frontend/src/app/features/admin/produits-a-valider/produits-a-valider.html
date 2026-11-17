@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h2 class="mb-0">Produits à valider</h2>
+    <p class="text-muted mb-0">Valide ou refuse les produits proposés par les agriculteurs.</p>
+  </div>
+  <button class="btn btn-success" (click)="charger()">🔄 Actualiser</button>
+</div>
+
+@if (errorMessage) {
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+}
+@if (successMessage) {
+  <div class="alert alert-success">{{ successMessage }}</div>
+}
+
+@if (loading) {
+  <p class="text-muted">Chargement...</p>
+} @else if (produits.length === 0) {
+  <div class="alert alert-light border">Aucun produit en attente de validation. 🎉</div>
+} @else {
+  <div class="table-responsive">
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Produit</th>
+          <th>Catégorie</th>
+          <th>Quantité</th>
+          <th>Prix</th>
+          <th>Agriculteur</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of produits; track p.id) {
+          <tr>
+            <td>
+              <div class="text-capitalize">{{ p.nom_produit }}</div>
+              @if (p.description) {
+                <div class="small text-muted">{{ p.description }}</div>
+              }
+            </td>
+            <td>{{ nomCategorie(p) }}</td>
+            <td>{{ p.quantite }} {{ p.unite }}</td>
+            <td>{{ p.prix_propose }} FCFA</td>
+            <td>
+              <div>{{ nomAgriculteur(p) }}</div>
+              @if (p.agriculteur?.telephone) {
+                <div class="small text-muted">📞 {{ p.agriculteur?.telephone }}</div>
+              }
+            </td>
+            <td>
+              <button class="btn btn-sm btn-success me-1" (click)="valider(p)">Valider</button>
+              <button class="btn btn-sm btn-outline-danger" (click)="refuser(p)">Refuser</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

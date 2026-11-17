@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ProduitService, Produit } from '../../../core/services/produit';
 import { CategorieService, Categorie } from '../../../core/services/categorie';
-import { Auth } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-mes-recoltes',
@@ -28,13 +27,14 @@ export class MesRecoltes implements OnInit {
   // Modification en cours
   editingId: number | null = null;
   editNom = '';
+  editDescription = '';
+  editCategorieId: number | null = null;
   editQuantite: number | null = null;
   editPrix: number | null = null;
 
   constructor(
     private produitService: ProduitService,
     private categorieService: CategorieService,
-    private authService: Auth,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -56,10 +56,9 @@ export class MesRecoltes implements OnInit {
   }
 
   loadProduits() {
-    const user = this.authService.getUser();
-    this.produitService.getAll().subscribe({
+    this.produitService.getMesProduits().subscribe({
       next: (produits) => {
-        this.mesProduits = produits.filter((p) => p.agriculteur_id === user?.id);
+        this.mesProduits = produits;
         this.cdr.markForCheck();
       },
       error: () => {
@@ -67,6 +66,25 @@ export class MesRecoltes implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  statutClasse(statut?: string): string {
+    switch (statut) {
+      case 'disponible':
+        return 'bg-success';
+      case 'vendu':
+        return 'bg-secondary';
+      case 'en_attente':
+        return 'bg-warning text-dark';
+      default:
+        return 'bg-danger';
+    }
+  }
+
+  statutLibelle(statut?: string): string {
+    if (!statut) return '';
+    if (statut === 'refuse') return 'refusé';
+    return statut.replace('_', ' ');
   }
 
   onSubmit() {
@@ -87,7 +105,8 @@ export class MesRecoltes implements OnInit {
     this.produitService.create(produit).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Produit ajouté avec succès !';
+        this.successMessage =
+          "Produit ajouté. Il sera visible par les acheteurs après validation par l'administrateur.";
         this.nom_produit = '';
         this.description = '';
         this.categorie_id = null;
@@ -110,6 +129,8 @@ export class MesRecoltes implements OnInit {
     this.successMessage = '';
     this.editingId = p.id!;
     this.editNom = p.nom_produit;
+    this.editDescription = p.description ?? '';
+    this.editCategorieId = p.categorie_id ?? null;
     this.editQuantite = Number(p.quantite);
     this.editPrix = Number(p.prix_propose);
   }
@@ -124,6 +145,8 @@ export class MesRecoltes implements OnInit {
 
     this.produitService.update(id, {
       nom_produit: this.editNom,
+      description: this.editDescription || null,
+      categorie_id: this.editCategorieId,
       quantite: this.editQuantite!,
       prix_propose: this.editPrix!,
     }).subscribe({

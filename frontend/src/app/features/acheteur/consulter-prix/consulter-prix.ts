@@ -109,7 +109,6 @@ export class ConsulterPrix implements OnInit {
     this.venteService.create({
       produit_id: p.id!,
       quantite_achetee: quantite,
-      prix_final: quantite * p.prix_propose,
     }).subscribe({
       next: () => {
         this.successMessage = `Achat de ${quantite} ${p.unite} de ${p.nom_produit} enregistré !`;
@@ -117,7 +116,10 @@ export class ConsulterPrix implements OnInit {
         this.cdr.markForCheck();
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || "Erreur lors de l'achat.";
+        const stock = err.error?.stock_disponible;
+        this.errorMessage =
+          (err.error?.message || "Erreur lors de l'achat.") +
+          (stock !== undefined ? ` Stock disponible : ${stock}.` : '');
         this.cdr.markForCheck();
       },
     });

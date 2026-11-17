@@ -12,7 +12,7 @@ export interface Produit {
   unite?: string;
   prix_propose: number;
   localisation?: string;
-  statut?: 'disponible' | 'vendu';
+  statut?: string;
   agriculteur?: {
     id: number;
     nom?: string | null;
@@ -32,16 +32,22 @@ export class ProduitService {
 
   constructor(private http: HttpClient) {}
 
+  // Produits disponibles (liste publique pour les acheteurs)
   getAll(): Observable<Produit[]> {
     return this.http.get<Produit[]>(`${this.apiUrl}/produits`);
+  }
+
+  // Tous les produits de l'agriculteur connecté (vendus, en attente, refusés compris)
+  getMesProduits(): Observable<Produit[]> {
+    return this.http.get<Produit[]>(`${this.apiUrl}/mes-produits`);
   }
 
   getOne(id: number): Observable<Produit> {
     return this.http.get<Produit>(`${this.apiUrl}/produits/${id}`);
   }
 
-  create(produit: Produit): Observable<Produit> {
-    return this.http.post<Produit>(`${this.apiUrl}/produits`, produit);
+  create(produit: Produit): Observable<{ message: string; produit: Produit }> {
+    return this.http.post<{ message: string; produit: Produit }>(`${this.apiUrl}/produits`, produit);
   }
 
   update(id: number, produit: Partial<Produit>): Observable<Produit> {
@@ -50,5 +56,25 @@ export class ProduitService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/produits/${id}`);
+  }
+
+  // --- Administration : validation des produits ---
+
+  getEnAttente(): Observable<Produit[]> {
+    return this.http.get<Produit[]>(`${this.apiUrl}/admin/produits/en-attente`);
+  }
+
+  valider(id: number): Observable<{ message: string; produit: Produit }> {
+    return this.http.put<{ message: string; produit: Produit }>(
+      `${this.apiUrl}/admin/produits/${id}/valider`,
+      {},
+    );
+  }
+
+  refuser(id: number): Observable<{ message: string; produit: Produit }> {
+    return this.http.put<{ message: string; produit: Produit }>(
+      `${this.apiUrl}/admin/produits/${id}/refuser`,
+      {},
+    );
   }
 }
