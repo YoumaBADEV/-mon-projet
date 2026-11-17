@@ -28,17 +28,22 @@ export class Layout {
       this.menu = [
         { label: 'Tableau de bord', icon: '📊', path: '/agriculteur' },
         { label: 'Mes récoltes', icon: '🌾', path: '/agriculteur/mes-recoltes' },
+        { label: 'Commandes reçues', icon: '📦', path: '/agriculteur/commandes' },
+        { label: 'Groupes', icon: '🤝', path: '/agriculteur/groupes' },
       ];
     } else if (this.role === 'acheteur') {
       this.menu = [
         { label: 'Tableau de bord', icon: '📊', path: '/acheteur' },
         { label: 'Prix du marché', icon: '💰', path: '/acheteur/consulter-prix' },
+        { label: 'Mes commandes', icon: '📦', path: '/acheteur/commandes' },
         { label: 'Mes achats', icon: '🧾', path: '/acheteur/historique' },
       ];
     } else if (this.role === 'admin') {
       this.menu = [
         { label: 'Administration', icon: '🛠️', path: '/admin' },
         { label: 'Produits à valider', icon: '✅', path: '/admin/produits' },
+        { label: 'Utilisateurs', icon: '👥', path: '/admin/utilisateurs' },
+        { label: 'Catégories', icon: '🏷️', path: '/admin/categories' },
         { label: 'Historique des prix', icon: '📈', path: '/historique-prix' },
       ];
     }

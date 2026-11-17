@@ -3,8 +3,32 @@
     <div class="auth-brand mb-1">🌾 Oracle de Prix</div>
     <p class="text-center text-muted mb-4">Connecte-toi pour accéder à ton espace</p>
 
+    @if (inscrit) {
+      <div class="alert alert-success">
+        Compte créé. Un email de vérification t'a été envoyé : clique sur le lien reçu, puis connecte-toi.
+      </div>
+    }
+
+    @if (verifie === 'ok') {
+      <div class="alert alert-success">Email vérifié ! Tu peux maintenant te connecter.</div>
+    }
+    @if (verifie === 'ko') {
+      <div class="alert alert-danger">Lien de vérification invalide ou expiré. Renvoie-toi un email ci-dessous.</div>
+    }
+
+    @if (infoMessage) {
+      <div class="alert alert-info">{{ infoMessage }}</div>
+    }
+
     @if (errorMessage) {
-      <div class="alert alert-danger">{{ errorMessage }}</div>
+      <div class="alert alert-danger">
+        {{ errorMessage }}
+        @if (emailNonVerifie) {
+          <button type="button" class="btn btn-link p-0 ms-1 align-baseline" (click)="renvoyer()">
+            Renvoyer l'email
+          </button>
+        }
+      </div>
     }
 
     <form (ngSubmit)="onSubmit()">
@@ -19,9 +43,8 @@
       <button type="submit" class="btn btn-success w-100" [disabled]="loading">
         {{ loading ? 'Connexion...' : 'Se connecter' }}
       </button>
-      <p class="text-center mt-3 mb-0">
-        Pas de compte ? <a routerLink="/register">S'inscrire</a>
-      </p>
+      <p class="text-center text-muted mt-3 mb-2">Pas encore de compte ?</p>
+      <a routerLink="/register" class="btn btn-outline-success w-100">S'inscrire</a>
     </form>
   </div>
 </div>

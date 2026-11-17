@@ -37,10 +37,13 @@ export class Auth {
     telephone?: string;
     localisation?: string;
     adresse?: string;
-  }): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, data).pipe(
-      tap((res) => this.saveSession(res))
-    );
+  }): Observable<{ message: string; user: User }> {
+    // Pas de session ouverte à l'inscription : l'utilisateur doit vérifier son email puis se connecter
+    return this.http.post<{ message: string; user: User }>(`${this.apiUrl}/register`, data);
+  }
+
+  renvoyerVerification(email: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/email/renvoyer`, { email });
   }
 
   login(email: string, password: string): Observable<AuthResponse> {

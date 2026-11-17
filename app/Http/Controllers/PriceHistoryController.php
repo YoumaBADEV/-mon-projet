@@ -18,6 +18,10 @@ class PriceHistoryController extends Controller
     // Ajouter une nouvelle entrée dans l'historique
     public function store(Request $request)
     {
+        if (!$request->user() || $request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Accès réservé à l’administrateur.'], 403);
+        }
+
         $request->validate([
             'product_name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',

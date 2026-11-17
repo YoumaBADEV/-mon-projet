@@ -16,6 +16,10 @@ import { Home } from './features/home/home';
 import { Admin } from './pages/admin/admin';
 import { HistoriquePrix } from './pages/historique-prix/historique-prix';
 import { ProduitsAValider } from './features/admin/produits-a-valider/produits-a-valider';
+import { Utilisateurs } from './features/admin/utilisateurs/utilisateurs';
+import { Categories } from './features/admin/categories/categories';
+import { Commandes } from './features/commandes/commandes';
+import { Groupes } from './features/agriculteur/groupes/groupes';
 
 export const routes: Routes = [
   { path: '', component: Home, pathMatch: 'full' },
@@ -72,6 +76,11 @@ export const routes: Routes = [
         canActivate: [authGuard],
         data: { roles: ['admin'] },
       },
+      { path: 'admin/utilisateurs', component: Utilisateurs, canActivate: [authGuard], data: { roles: ['admin'] } },
+      { path: 'admin/categories', component: Categories, canActivate: [authGuard], data: { roles: ['admin'] } },
+      { path: 'agriculteur/commandes', component: Commandes, canActivate: [authGuard], data: { roles: ['agriculteur'] } },
+      { path: 'acheteur/commandes', component: Commandes, canActivate: [authGuard], data: { roles: ['acheteur'] } },
+      { path: 'agriculteur/groupes', component: Groupes, canActivate: [authGuard], data: { roles: ['agriculteur'] } },
       {
         path: 'historique-prix',
         component: HistoriquePrix,

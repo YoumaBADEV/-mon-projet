@@ -43,9 +43,9 @@ export class Register {
       localisation: this.localisation || undefined,
       adresse: this.adresse || undefined,
     }).subscribe({
-      next: (res) => {
+      next: () => {
         this.loading = false;
-        this.router.navigate([this.authService.getHomePath(res.user.role)]);
+        this.router.navigate(['/login'], { queryParams: { inscrit: '1' } });
       },
       error: (err) => {
         this.loading = false;

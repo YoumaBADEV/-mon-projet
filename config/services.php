@@ -28,6 +28,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // true : l'email doit etre verifie avant la connexion ; false : connexion immediate
+    'email_verification_required' => env('EMAIL_VERIFICATION_REQUIRED', true),
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

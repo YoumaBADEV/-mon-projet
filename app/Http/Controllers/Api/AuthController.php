@@ -6,11 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    private function urlFrontend(): string
+    {
+        return rtrim(env('FRONTEND_URL', 'http://localhost:4200'), '/');
+    }
+
     // POST /api/register
     public function register(Request $request): JsonResponse
     {
@@ -19,7 +26,8 @@ class AuthController extends Controller
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:agriculteur,acheteur,admin',
+            // Un compte admin ne peut pas être créé depuis l'inscription publique
+            'role' => 'required|in:agriculteur,acheteur',
             'telephone' => 'nullable|string|max:20',
             'localisation' => 'nullable|string|max:255',
             'adresse' => 'nullable|string|max:255',
@@ -42,12 +50,53 @@ class AuthController extends Controller
             'matricule' => $request->matricule,
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Email de vérification (le compte est créé même si l'envoi échoue : on peut le renvoyer)
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Throwable $e) {
+            Log::warning('Envoi email de verification impossible : ' . $e->getMessage());
+        }
 
+        // Pas de token ici : l'utilisateur doit d'abord vérifier son email puis se connecter
         return response()->json([
+            'message' => 'Compte créé. Un email de vérification vous a été envoyé.',
             'user' => $user,
-            'token' => $token,
         ], 201);
+    }
+
+    // GET /api/email/verify/{id}/{hash} : lien reçu par email (signé)
+    public function verifierEmail(Request $request, $id, $hash): RedirectResponse
+    {
+        $user = User::find($id);
+
+        if (! $user || ! hash_equals(sha1($user->getEmailForVerification()), (string) $hash)) {
+            return redirect()->away($this->urlFrontend() . '/login?verifie=0');
+        }
+
+        if (! $user->hasVerifiedEmail()) {
+            $user->markEmailAsVerified();
+        }
+
+        return redirect()->away($this->urlFrontend() . '/login?verifie=1');
+    }
+
+    // POST /api/email/renvoyer : renvoyer l'email de vérification
+    public function renvoyerVerification(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if ($user && ! $user->hasVerifiedEmail()) {
+            try {
+                $user->sendEmailVerificationNotification();
+            } catch (\Throwable $e) {
+                Log::warning('Renvoi email de verification impossible : ' . $e->getMessage());
+            }
+        }
+
+        // Réponse identique dans tous les cas (ne révèle pas si l'email existe)
+        return response()->json(['message' => 'Si ce compte existe, un email de vérification a été envoyé.']);
     }
 
     // POST /api/login
@@ -66,6 +115,14 @@ class AuthController extends Controller
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Identifiants incorrects'], 401);
+        }
+
+        // L'admin (créé à la main) n'a pas besoin de vérifier son email
+        if (config('services.email_verification_required') && $user->role !== 'admin' && ! $user->hasVerifiedEmail()) {
+            return response()->json([
+                'message' => 'Votre email n\'est pas encore vérifié. Consultez votre boîte mail.',
+                'code' => 'email_non_verifie',
+            ], 403);
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

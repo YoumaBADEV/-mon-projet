@@ -1,29 +1,84 @@
-﻿<div class="historique-container">
-  <h1>Historique des prix</h1>
-  <p>Consultez l'évolution des prix des produits agricoles.</p>
+<div class="historique-container">
+  <h3 class="mb-1">Historique des prix</h3>
+  <p class="text-muted">Consultez l'évolution des prix des produits agricoles.</p>
 
-  <p *ngIf="chargement">Chargement des prix...</p>
-  <p *ngIf="erreur">{{ erreur }}</p>
+  @if (chargement) { <p>Chargement des prix...</p> }
+  @if (erreur) { <div class="alert alert-danger">{{ erreur }}</div> }
 
-  <table *ngIf="!chargement && !erreur">
-    <thead>
-      <tr>
-        <th>Produit</th>
-        <th>Prix moyen (FCFA)</th>
-        <th>Région</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let prix of historique">
-        <td>{{ prix.nom_produit }}</td>
-        <td>{{ prix.prix_moyen | number:'1.0-2' }}</td>
-        <td>{{ prix.region || 'Non précisée' }}</td>
-        <td>{{ prix.date_calcul | date:'dd/MM/yyyy' }}</td>
-      </tr>
-      <tr *ngIf="historique.length === 0">
-        <td colspan="4">Aucun historique de prix disponible.</td>
-      </tr>
-    </tbody>
-  </table>
+  @if (!chargement && !erreur) {
+    @if (historique.length === 0) {
+      <div class="alert alert-light border">Aucun historique de prix disponible pour le moment.</div>
+    } @else {
+      <select class="form-select w-auto mb-3" [(ngModel)]="produitChoisi" (ngModelChange)="changerProduit()">
+        @for (p of produits; track p) { <option [value]="p">{{ p }}</option> }
+      </select>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="card stat-card p-3">
+            <div class="text-muted small">Dernier prix moyen</div>
+            <div class="fs-4 fw-bold">{{ prixDernier | number:'1.0-0' }} FCFA</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card stat-card p-3">
+            <div class="text-muted small">Prix le plus bas</div>
+            <div class="fs-4 fw-bold">{{ prixMin | number:'1.0-0' }} FCFA</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card stat-card p-3">
+            <div class="text-muted small">Prix le plus haut</div>
+            <div class="fs-4 fw-bold">{{ prixMax | number:'1.0-0' }} FCFA</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-3 mb-4">
+        <h6 class="mb-2">Évolution du prix moyen — {{ produitChoisi }}</h6>
+        <svg [attr.viewBox]="'0 0 ' + W + ' ' + H" class="w-100" role="img"
+             aria-label="Courbe d'évolution du prix moyen">
+          @for (r of reperes; track r.y) {
+            <line [attr.x1]="M.left" [attr.x2]="W - M.right" [attr.y1]="r.y" [attr.y2]="r.y"
+                  stroke="#dee2e6" stroke-width="1" />
+            <text [attr.x]="M.left - 8" [attr.y]="r.y + 4" text-anchor="end" font-size="11" fill="#6c757d">
+              {{ r.prix | number:'1.0-0' }}
+            </text>
+          }
+          @if (points.length > 1) {
+            <polyline [attr.points]="ligneSvg" fill="none" stroke="#198754" stroke-width="2.5" />
+          }
+          @for (p of points; track $index) {
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4.5" fill="#198754">
+              <title>{{ p.prix | number:'1.0-0' }} FCFA — {{ p.date | date:'dd/MM/yyyy' }}</title>
+            </circle>
+            <text [attr.x]="p.x" [attr.y]="H - 14" text-anchor="middle" font-size="10" fill="#6c757d">
+              {{ p.date | date:'dd/MM' }}
+            </text>
+          }
+        </svg>
+        @if (points.length === 1) {
+          <small class="text-muted">Un seul relevé pour ce produit : la courbe apparaîtra avec les prochains achats.</small>
+        }
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-success">
+            <tr><th>Produit</th><th>Prix moyen (FCFA)</th><th>Région</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            @for (h of lignes.slice().reverse(); track h.id) {
+              <tr>
+                <td>{{ h.nom_produit }}</td>
+                <td>{{ h.prix_moyen | number:'1.0-2' }}</td>
+                <td>{{ h.region || 'Non précisée' }}</td>
+                <td>{{ h.date_calcul | date:'dd/MM/yyyy' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
 </div>

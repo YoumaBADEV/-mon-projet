@@ -1,2 +1,58 @@
-<h1>Administration</h1>
-<p>Bienvenue dans l'espace d'administration.</p>
+<h3 class="mb-1">Administration</h3>
+<p class="text-muted">Vue d'ensemble de la plateforme Oracle de Prix.</p>
+
+@if (erreur) { <div class="alert alert-danger">{{ erreur }}</div> }
+
+@if (stats) {
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card stat-card p-3">
+        <div class="text-muted small">Utilisateurs</div>
+        <div class="fs-3 fw-bold">{{ stats.utilisateurs.total }}</div>
+        <div class="small text-muted">
+          {{ stats.utilisateurs.agriculteurs }} agriculteurs · {{ stats.utilisateurs.acheteurs }} acheteurs
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card p-3">
+        <div class="text-muted small">Produits</div>
+        <div class="fs-3 fw-bold">{{ stats.produits.total }}</div>
+        <div class="small text-muted">{{ stats.produits.disponible }} disponibles · {{ stats.produits.vendu }} vendus</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card p-3">
+        <div class="text-muted small">Ventes</div>
+        <div class="fs-3 fw-bold">{{ stats.ventes.total }}</div>
+        <div class="small text-muted">transactions</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card p-3">
+        <div class="text-muted small">Chiffre d'affaires</div>
+        <div class="fs-3 fw-bold">{{ stats.ventes.chiffre_affaires | number:'1.0-0' }}</div>
+        <div class="small text-muted">FCFA</div>
+      </div>
+    </div>
+  </div>
+
+  @if (stats.produits.en_attente > 0) {
+    <div class="alert alert-warning d-flex justify-content-between align-items-center">
+      <span>{{ stats.produits.en_attente }} produit(s) en attente de validation.</span>
+      <a routerLink="/admin/produits" class="btn btn-sm btn-warning">Valider</a>
+    </div>
+  }
+
+  <div class="card p-3">
+    <h6>Produits par statut</h6>
+    <ul class="list-unstyled mb-0">
+      <li>En attente : <strong>{{ stats.produits.en_attente }}</strong></li>
+      <li>Disponibles : <strong>{{ stats.produits.disponible }}</strong></li>
+      <li>Vendus : <strong>{{ stats.produits.vendu }}</strong></li>
+      <li>Refusés : <strong>{{ stats.produits.refuse }}</strong></li>
+    </ul>
+  </div>
+} @else if (!erreur) {
+  <p>Chargement...</p>
+}
